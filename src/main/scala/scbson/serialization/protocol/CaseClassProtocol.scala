@@ -66,8 +66,6 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 	}
 	*/
 	
-	//------------------------------------------------------------------------------
-	
 	// BETTER cache results
 	protected def fieldNamesFor[T:Manifest]:Seq[String]	=
 			(Reflector constructor manifest[T].erasure) getOrError ("cannot get fields for type " + manifest[T].erasure)

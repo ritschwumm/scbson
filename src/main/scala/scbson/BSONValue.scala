@@ -1,9 +1,11 @@
 package scbson
 
+import java.util.{ Arrays => JArrays }
 import java.util.regex.Pattern
 
-import scutil.Functions._
 import scutil.Implicits._
+import scutil.Functions._
+import scutil.Marshaller
 import scutil.time._
 
 object BSONValue {
@@ -33,7 +35,11 @@ object BSONValue {
 		else sys error ("unexpected BSONValue: " + clazz)
 	}
 }
-sealed abstract class BSONValue
+sealed abstract class BSONValue {
+	def downcast[T<:BSONValue]:Option[T]	=
+			try { Some(asInstanceOf[T]) }
+			catch { case e:ClassCastException => None }
+}
 
 case class BSONDouble(value:Double)									extends BSONValue
 
@@ -54,12 +60,33 @@ case class BSONArray(value:Seq[BSONValue])							extends BSONValue {
 	def ++ (that:BSONArray):BSONArray	= BSONArray(this.value ++ that.value)
 }
 
-case class BSONBinary(value:Array[Byte], subtype:BSONBinaryType)	extends BSONValue
+case class BSONBinary(value:Array[Byte], subtype:BSONBinaryType)	extends BSONValue {
+	// Array doesn't have useful equals/hashCode implementations
+	override def equals(that:Any):Boolean	= that match {
+		case that:BSONBinary	if that canEqual this	=> (this.subtype == that.subtype) && (JArrays equals (this.value, that.value))
+		case _											=> false
+	}
+	def canEqual(that:Any):Boolean	= that.isInstanceOf[BSONBinary]
+	override def hashCode():Int		= subtype.hashCode + (JArrays hashCode value) 
+}
 
 // deprecated
 // case object BSONUndefined											extends BSONValue
 
-case class BSONObjectId(bytes:Array[Byte])							extends BSONValue
+case class BSONObjectId(bytes:Array[Byte])							extends BSONValue {
+	// Array doesn't have useful equals/hashCode implementations
+	override def equals(that:Any):Boolean	= that match {
+		case that:BSONObjectId	if that canEqual this	=> (JArrays equals (this.bytes, that.bytes))
+		case _											=> false
+	}
+	def canEqual(that:Any):Boolean	= that.isInstanceOf[BSONObjectId]
+	override def hashCode():Int		= (JArrays hashCode bytes) 
+}
+/*
+case class BSONObjectId(seconds:Int, machine:Tri, pid:Short, inc:Tri)	extends BSONValue
+// 3 bytes, the highest one must always be 0
+case class Tri(value:Int)
+*/
 
 case class BSONBoolean(value:Boolean)								extends BSONValue
 
@@ -72,7 +99,7 @@ case class BSONRegex(pattern:String, options:Set[BSONRegexOption])	extends BSONV
 // deprecated
 // case class BSONDBPointer(collection:String, objectId:BSONObjectId)	extends BSONValue
 
-// TODO use JSExpression in here?
+// BETTER use JSExpression in here?
 case class BSONCode(code:String)									extends BSONValue
 
 case class BSONSymbol(value:Symbol)									extends BSONValue
@@ -103,16 +130,8 @@ object BSONVarDocument {
 
 //------------------------------------------------------------------------------
 
-object BSONBinaryType {
-	def fromId(id:Byte):BSONBinaryType	= id match {
-		case 0x00	=> BinaryGeneric
-		case 0x01	=> BinaryFunction
-		case 0x02	=> BinaryOld
-		case 0x03	=> BinaryUUID
-		case 0x05	=> BinaryMD5
-		case 0x80	=> BinaryCustom
-	}
-	def toId(typ:BSONBinaryType):Byte	= typ match {
+object BSONBinaryTypeMarshaller extends Marshaller[BSONBinaryType,Byte] {
+	def write(it:BSONBinaryType):Byte	= it match {
 		case BinaryGeneric	=> 0x00
 		case BinaryFunction	=> 0x01
 		case BinaryOld		=> 0x02
@@ -120,7 +139,16 @@ object BSONBinaryType {
 		case BinaryMD5		=> 0x05
 		case BinaryCustom	=> 0x80.toByte
 	}
+	def read(it:Byte):Option[BSONBinaryType]	= it matchOption {
+		case 0x00	=> BinaryGeneric
+		case 0x01	=> BinaryFunction
+		case 0x02	=> BinaryOld
+		case 0x03	=> BinaryUUID
+		case 0x05	=> BinaryMD5
+		case 0x80	=> BinaryCustom
+	}
 }
+
 sealed abstract class BSONBinaryType
 case object BinaryGeneric	extends BSONBinaryType
 case object BinaryFunction	extends BSONBinaryType
@@ -129,12 +157,34 @@ case object BinaryUUID		extends BSONBinaryType
 case object BinaryMD5		extends BSONBinaryType
 case object BinaryCustom	extends BSONBinaryType
 
+object BSONRegexOptionMarshaller extends Marshaller[BSONRegexOption,Char] {
+	def write(it:BSONRegexOption):Char	= it match {
+		case RegexCaseInsensitive	=> 'i'
+		case RegexMultiline			=> 'm'
+		case RegexDotall			=> 's'
+		case RegexUnicode			=> 'u'
+		case RegexLocalized			=> 'l'
+		case RegexExtended			=> 'x'
+	}
+	
+	def read(it:Char):Option[BSONRegexOption]	= it matchOption {
+		case 'i'	=> RegexCaseInsensitive
+		case 'm'	=> RegexMultiline
+		case 's'	=> RegexDotall
+		case 'u'	=> RegexUnicode
+		case 'l'	=> RegexLocalized
+		case 'x'	=> RegexExtended
+	}
+}
+// TODO maybe add
+//	'c',	Pattern.CANON_EQ
+//	't',	Pattern.LITERAL
+//	'd',	Pattern.UNIX_LINES
+//	'g'		GLOBAL
 sealed abstract class BSONRegexOption
 case object RegexCaseInsensitive	extends BSONRegexOption	// i	CASE_INSENSITIVE
 case object RegexMultiline			extends BSONRegexOption	// m	MULTILINE
-case object RegexExtended			extends BSONRegexOption	// x	COMMENTS
 case object RegexDotall				extends BSONRegexOption	// s	DOTALL
-
-//case class BSONObjectId(seconds:Int, machine:Tri, pid:Short, inc:Tri)	extends BSONValue
-// 3 bytes, the highest one must always be 0
-// case class Tri(value:Int)
+case object RegexUnicode			extends BSONRegexOption	// u	UNICODE_CASE
+case object RegexLocalized			extends BSONRegexOption	// l	LOCALIZED
+case object RegexExtended			extends BSONRegexOption	// x	COMMENTS
