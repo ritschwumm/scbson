@@ -88,8 +88,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 			},
 			in => {
 				val formatted	= downcast[BSONDocument](in)
-				// val identifier	= downcast[BSONString](formatted.value.head._2).value
-				val identifier	= downcast[BSONString](formatted.valueMap(Summand.typeTag))
+				val identifier	= downcast[BSONString](formatted valueMap Summand.typeTag)
 				helper read (identifier, formatted)
 			}
 		)

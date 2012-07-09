@@ -5,7 +5,7 @@ import java.util.regex.Pattern
 
 import scutil.Implicits._
 import scutil.Functions._
-import scutil.Marshaller
+import scutil.data.Marshaller
 import scutil.time._
 
 object BSONValue {
@@ -115,18 +115,6 @@ case class BSONLong(value:Long)										extends BSONValue
 case object BSONMinKey												extends BSONValue
 
 case object BSONMaxKey												extends BSONValue
-
-//------------------------------------------------------------------------------
-
-object BSONVarArray {
-	def apply(it:BSONValue*):BSONArray					= BSONArray(it)
-	def unapplySeq(it:BSONArray):Option[Seq[BSONValue]]	= Some(it.value)
-}
-
-object BSONVarDocument {
-	def apply(it:(String,BSONValue)*):BSONDocument					= BSONDocument(it)
-	def unapplySeq(it:BSONDocument):Option[Seq[(String,BSONValue)]]	= Some(it.value)
-}
 
 //------------------------------------------------------------------------------
 

@@ -4,10 +4,10 @@ import scbson._
 
 private object BSONSerializationUtil {
 	def fail(message:String):Nothing =
-			throw new JSONDeserializationException(message)
+			throw new BSONDeserializationException(message)
 	
 	def fail(message:String, e:Exception):Nothing =
-			throw new JSONDeserializationException(message, e)
+			throw new BSONDeserializationException(message, e)
 	
 	def downcast[T<:BSONValue](it:BSONValue):T	=
 			try { it.asInstanceOf[T] }

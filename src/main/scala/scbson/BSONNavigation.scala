@@ -9,6 +9,8 @@ final class BSONNavigation(value:Option[BSONValue]) {
 	def /(key:String):Option[BSONValue]	= bsonDocument	flatMap { _.value.toMap	get		key		}
 	def /(index:Int):Option[BSONValue]	= bsonArray		flatMap { _.value.lift	apply	index	}
 		
+	//------------------------------------------------------------------------------
+	
 	def bsonDouble:Option[BSONDouble]			= value collect { case x:BSONDouble			=> x			}
 	def bsonString:Option[BSONString]			= value collect { case x:BSONString			=> x			}
 	def bsonDocument:Option[BSONDocument]		= value collect { case x:BSONDocument		=> x			}

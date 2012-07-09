@@ -1,7 +1,6 @@
 package scbson.serialization
 
-import scutil.Bijection
-import scutil.Marshaller
+import scutil.data._
 
 import scbson._
 

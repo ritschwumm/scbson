@@ -1,6 +1,6 @@
 package scbson.serialization
 
-import scutil.Bijection
+import scutil.data._
 
 import scbson._
 
@@ -95,8 +95,8 @@ trait CollectionProtocol {
 	
 	// alternative {left} or {right}
 	implicit def EitherBSONFormat[L:BSONFormat,R:BSONFormat]:BSONFormat[Either[L,R]]	= new BSONFormat[Either[L,R]] {
-		private val rightTag	= ">"
-		private val leftTag		= "<"
+		private val rightTag	= "right"
+		private val leftTag		= "left"
 		
 		def write(out:Either[L,R]):BSONValue	= out match {
 			case Right(value)	=> BSONDocument(Seq(
@@ -112,6 +112,28 @@ trait CollectionProtocol {
 				case (None, Some(bs))	=> Right(doRead[R](bs))
 				case (Some(bs), None)	=> Left(doRead[L](bs))
 				case _					=> fail("unexpected either")
+			}
+		}
+	}
+	
+	implicit def TriedBSONFormat[F:BSONFormat,W:BSONFormat]:BSONFormat[Tried[F,W]]	= new BSONFormat[Tried[F,W]] {
+		private val winTag	= "win"
+		private val failTag	= "fail"
+		
+		def write(out:Tried[F,W]):BSONValue	= out match {
+			case Fail(value)	=> BSONDocument(Seq(
+				failTag		-> doWrite[F](value)
+			))
+			case Win(value)	=> BSONDocument(Seq(
+				winTag	-> doWrite[W](value)
+			))
+		}
+		def read(in:BSONValue):Tried[F,W]	= { 
+			val	map	= downcast[BSONDocument](in).value.toMap
+			(map get failTag, map get winTag) match {
+				case (Some(bs), None)	=> Fail(doRead[F](bs))
+				case (None, Some(bs))	=> Win(doRead[W](bs))
+				case _					=> fail("unexpected trial")
 			}
 		}
 	}

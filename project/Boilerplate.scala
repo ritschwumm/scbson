@@ -11,6 +11,7 @@ object Boilerplate {
 	}	
 	
 	//------------------------------------------------------------------------------
+	//## tuples
 	
 	def genTupleFile(outDir:File):File	= {
 		val outFile		= outDir / "TupleProtocolGenerated.scala"
@@ -37,23 +38,24 @@ object Boilerplate {
 	}
 			
 	def genTupleMethod(arity:Int):String	= {
-		def aritywise(item:Int=>String):String	= 1 to arity map item mkString ","
-		val typeParams	= aritywise("T"+_+":BSONFormat") 
-		val typeNames	= aritywise("T"+_)
+		val awc	= aritywise(arity)(",") _
+		val typeParams	= awc("T$:BSONFormat") 
+		val typeNames	= awc("T$")
 		("""
 		|	implicit def Tuple"""+arity+"""BSONFormat["""+typeParams+"""]:BSONFormat[("""+typeNames+""")]	= new BSONFormat[("""+typeNames+""")] {
 		|		def write(out:("""+typeNames+""")):BSONValue	= {
-		|			BSONArray(Seq("""+ aritywise(i => "doWrite[T"+i+"](out._"+i+")")	+"""))
+		|			BSONArray(Seq("""+ awc("doWrite[T$](out._$)")	+"""))
 		|		}
 		|		def read(in:BSONValue):("""+typeNames+""")	= {
 		|			val	arr	= forceArray(in)
-		|			("""+ aritywise(i => "doRead[T"+i+"](arr("+(i-1)+"))") +""")
+		|			("""+ awc("doRead[T$](arr($-1))") + """)
 		|		}
 		|	}
 		""").stripMargin
 	}
 	
 	//------------------------------------------------------------------------------
+	//## case classes
 	
 	def genCaseClassFile(outDir:File):File	= {
 		val outFile		= outDir / "CaseClassProtocolGenerated.scala"
@@ -81,24 +83,30 @@ object Boilerplate {
 	}
 	
 	def genCaseClassMethod(arity:Int):String	= {
-		def aritywise(item:Int=>String):String	= 1 to arity map item mkString ","
-		val typeParams	= aritywise("S"+_+":BSONFormat") 
-		val typeNames	= aritywise("S"+_)
-		val fieldNames	= aritywise("k"+_)
+		val awc	= aritywise(arity)(",") _
+		val typeParams	= awc("S$:BSONFormat") 
+		val typeNames	= awc("S$")
+		val fieldNames	= awc("k$")
 		("""
 		|	def caseClassBSONFormat"""+arity+"""["""+typeParams+""",T:Manifest](apply:("""+typeNames+""")=>T, unapply:T=>Option[("""+typeNames+""")]):BSONFormat[T]	= {
 		|		val Seq("""+fieldNames+""")	= fieldNamesFor[T]
 		|		new BSONFormat[T] {
 		|			def write(out:T):BSONValue	= {
 		|				val fields	= unapply(out).get
-		|				BSONVarDocument(""" + aritywise(i => "k"+i+" -> doWrite[S"+i+"](fields._"+i+")") + """)
+		|				BSONVarDocument(""" + awc("k$ -> doWrite[S$](fields._$)") + """)
 		|			}
 		|			def read(in:BSONValue):T	= {
 		|				val map	= forceMap(in)
-		|				apply(""" + aritywise(i => "doRead[S"+i+"](map(k"+i+"))") + """)
+		|				apply(""" + awc("doRead[S$](map(k$))") + """)
 		|			}
 		|		}
 		|	}
 		""").stripMargin
 	}
+	
+	//------------------------------------------------------------------------------
+	//## helper
+	
+	private def aritywise(arity:Int)(separator:String)(format:String):String	= 
+			1 to arity map { i => format replace ("$", i.toString) } mkString separator
 }

@@ -1,7 +1,7 @@
 package scbson.serialization
 
 import scutil.Implicits._
-import scutil.Bijection
+import scutil.data.Bijection
 
 import scbson._
 

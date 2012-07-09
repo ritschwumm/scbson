@@ -19,7 +19,7 @@ private class SumHelper[T](summands:Seq[Summand[_<:T]]) {
 			
 	def read(identifier:BSONString, in:BSONValue):T	=
 			try {
-				val summand	= summands find { _.identifier == identifier.value } getOrError "summand not found"
+				val summand	= summands find { _.identifier ==== identifier.value } getOrError "summand not found"
 				summand.format read in
 			}
 			catch {
