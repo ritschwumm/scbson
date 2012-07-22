@@ -1,6 +1,6 @@
 package scbson.serialization
 
-import scutil.Functions._
+import scutil.lang._
 import scutil.time._
 
 import scbson._

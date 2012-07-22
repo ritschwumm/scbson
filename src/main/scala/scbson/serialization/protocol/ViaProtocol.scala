@@ -1,6 +1,6 @@
 package scbson.serialization
 
-import scutil.data._
+import scutil.lang._
 
 import scbson._
 

@@ -1,7 +1,7 @@
 package scbson
 
+import scutil.lang._
 import scutil.Implicits._
-import scutil.data.Marshaller
 
 object BSONBinaryTypeMarshaller extends Marshaller[BSONBinaryType,Byte] {
 	def write(it:BSONBinaryType):Byte	= it match {

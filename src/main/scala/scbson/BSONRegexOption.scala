@@ -1,7 +1,7 @@
 package scbson
 
+import scutil.lang._
 import scutil.Implicits._
-import scutil.data.Marshaller
 
 object BSONRegexOptionMarshaller extends Marshaller[BSONRegexOption,Char] {
 	def write(it:BSONRegexOption):Char	= it match {

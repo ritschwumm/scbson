@@ -1,6 +1,6 @@
 package scbson
 
-import scutil.data.Bijection
+import scutil.lang._
 
 /** typeclass-bases, bidirectional BSON serialization */
 package object serialization {
