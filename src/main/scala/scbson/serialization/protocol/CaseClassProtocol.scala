@@ -1,8 +1,8 @@
 package scbson.serialization
 
-import scutil.Implicits._
+import reflect.runtime.universe._
 
-import scmirror._
+import scutil.Implicits._
 
 import scbson._
 
@@ -11,7 +11,7 @@ import BSONSerializationUtil._
 object CaseClassProtocol extends CaseClassProtocol
 
 trait CaseClassProtocol extends CaseClassProtocolGenerated {
-	def caseObjectBSONFormat[T:Manifest](singleton:T):BSONFormat[T]	= new BSONFormat[T] {
+	def caseObjectBSONFormat[T:TypeTag](singleton:T):BSONFormat[T]	= new BSONFormat[T] {
 		def write(out:T):BSONValue	= {
 			BSONDocument.empty
 		}
@@ -20,7 +20,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 		}
 	}
 	
-	def caseClassBSONFormat1[S1:BSONFormat,T:Manifest](
+	def caseClassBSONFormat1[S1:BSONFormat,T:TypeTag](
 		apply:S1=>T,
 		unapply:T=>Option[S1]
 	):BSONFormat[T]	= {
@@ -42,7 +42,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 	}
 	
 	/*
-	def caseClassBSONFormat2[S1:BSONFormat,S2:BSONFormat,T:Manifest](
+	def caseClassBSONFormat2[S1:BSONFormat,S2:BSONFormat,T:TypeTag](
 		apply:(S1,S2)=>T, 
 		unapply:T=>Option[(S1,S2)]
 	):BSONFormat[T]	= {
@@ -67,9 +67,17 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 	*/
 	
 	// BETTER cache results
-	protected def fieldNamesFor[T:Manifest]:Seq[String]	=
-			(Reflector constructor manifest[T].erasure) getOrError ("cannot get fields for type " + manifest[T].erasure)
-		
+	protected def fieldNamesFor[T:TypeTag]:Seq[String]	= {
+		val typ	= typeOf[T]
+		val names:Option[Seq[String]]	=
+				for {
+					primaryCtor	<- typ.declarations filter { _.isMethod } map { _.asMethod } filter { _.isPrimaryConstructor } singleOption;
+					paramNames	<- primaryCtor.paramss.singleOption
+				}
+				yield paramNames map { _.name.decoded }
+		names getOrError ("cannot get fields for type " + typ)
+	}
+	
 	protected def forceMap(in:BSONValue):Map[String,BSONValue]	=
 			downcast[BSONDocument](in).valueMap
 		

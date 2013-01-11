@@ -24,7 +24,6 @@ object Boilerplate {
 		|package scbson.serialization
 		|
 		|import scutil.Implicits._
-		|import scmirror._
 		|import scbson._
 		|import BSONSerializationUtil._
 		|
@@ -67,8 +66,8 @@ object Boilerplate {
 		"""
 		|package scbson.serialization
 		|
+		|import reflect.runtime.universe._
 		|import scutil.Implicits._
-		|import scmirror._
 		|import scbson._
 		|import BSONSerializationUtil._
 		|
@@ -76,7 +75,7 @@ object Boilerplate {
 		""".stripMargin		+ 
 		(2 to 22 map genCaseClassMethod mkString "\n")	+
 		"""
-		|	protected def fieldNamesFor[T:Manifest]:Seq[String]
+		|	protected def fieldNamesFor[T:TypeTag]:Seq[String]
 		|	protected def forceMap(in:BSONValue):Map[String,BSONValue]
 		|}
 		""".stripMargin
@@ -88,7 +87,7 @@ object Boilerplate {
 		val typeNames	= awc("S$")
 		val fieldNames	= awc("k$")
 		("""
-		|	def caseClassBSONFormat"""+arity+"""["""+typeParams+""",T:Manifest](apply:("""+typeNames+""")=>T, unapply:T=>Option[("""+typeNames+""")]):BSONFormat[T]	= {
+		|	def caseClassBSONFormat"""+arity+"""["""+typeParams+""",T:TypeTag](apply:("""+typeNames+""")=>T, unapply:T=>Option[("""+typeNames+""")]):BSONFormat[T]	= {
 		|		val Seq("""+fieldNames+""")	= fieldNamesFor[T]
 		|		new BSONFormat[T] {
 		|			def write(out:T):BSONValue	= {
