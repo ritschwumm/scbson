@@ -45,15 +45,17 @@ object BSONDocument {
 	val empty	= BSONDocument(Seq.empty)
 }
 case class BSONDocument(value:Seq[(String,BSONValue)])				extends BSONValue {
-	def valueMap:Map[String,BSONValue]		= value.toMap
+	def get(key:String):Option[BSONValue]	= value collectFirst { case (k,v) if (k == key) => v }
 	def ++ (that:BSONDocument):BSONDocument	= BSONDocument(this.value ++ that.value)
+	def valueMap:Map[String,BSONValue]		= value.toMap
 }
 
 object BSONArray {
 	val empty	= BSONArray(Seq.empty)
 }
 case class BSONArray(value:Seq[BSONValue])							extends BSONValue {
-	def ++ (that:BSONArray):BSONArray	= BSONArray(this.value ++ that.value)
+	def get(index:Int):Option[BSONValue]	= value lift index
+	def ++ (that:BSONArray):BSONArray		= BSONArray(this.value ++ that.value)
 }
 
 case class BSONBinary(value:Array[Byte], subtype:BSONBinaryType)	extends BSONValue {
