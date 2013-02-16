@@ -1,7 +1,7 @@
 BSON utilities for conversion between BSON-ASTs and scala objects.
 
 To build this code, get and install SBT from 
-	https://github.com/harrah/xsbt
+	https://github.com/sbt/sbt
 
 Get and install these library/libraries before building:
 	https://github.com/ritschwumm/scutil
