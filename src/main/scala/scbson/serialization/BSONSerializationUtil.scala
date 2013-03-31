@@ -2,7 +2,7 @@ package scbson.serialization
 
 import scbson._
 
-private object BSONSerializationUtil {
+object BSONSerializationUtil {
 	def fail(message:String):Nothing =
 			throw new BSONDeserializationException(message)
 	

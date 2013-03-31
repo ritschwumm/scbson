@@ -10,7 +10,7 @@ import BSONSerializationUtil._
 
 object CaseClassProtocol extends CaseClassProtocol
 
-trait CaseClassProtocol extends CaseClassProtocolGenerated {
+trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	def caseObjectBSONFormat[T:TypeTag](singleton:T):BSONFormat[T]	= new BSONFormat[T] {
 		def write(out:T):BSONValue	= {
 			BSONDocument.empty
@@ -66,6 +66,25 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 	}
 	*/
 	
+	/** uses a field with an empty name for the specific constructor */
+	def caseClassSumBSONFormat[T](summands:Summand[T,_<:T]*):BSONFormat[T]	=
+			sumBSONFormat(summands map (new InlinePartialBSONFormat(_)))
+		
+	/** injects the type tag as a field with an empty name into an existing object */
+	private class InlinePartialBSONFormat[T,C<:T](summand:Summand[T,C]) extends PartialBSONFormat[T] {
+		import summand._
+		val typeTag	= ""
+		def write(value:T):Option[BSONValue]	=
+				castValue(value) map { it =>
+					BSONVarDocument(typeTag -> BSONString(identifier)) ++ 
+					downcast[BSONDocument](format write it)
+				}
+		def read(bson:BSONValue):Option[T]	=
+				downcast[BSONDocument](bson).value 
+				.exists	{ _ == (typeTag, BSONString(identifier)) } 
+				.guard	{ format read bson }
+	}
+		
 	// BETTER cache results
 	protected def fieldNamesFor[T:TypeTag]:Seq[String]	= {
 		val typ	= typeOf[T]
@@ -80,25 +99,4 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 	
 	protected def forceMap(in:BSONValue):Map[String,BSONValue]	=
 			downcast[BSONDocument](in).valueMap
-		
-	//------------------------------------------------------------------------------
-	//## sums of case classes
-	
-	def caseClassSumBSONFormat[T](summands:Summand[_<:T]*):BSONFormat[T]	= {
-		val helper	= new SumHelper[T](summands)
-		BSONFormat[T](
-			out => {
-				val (identifier,formatted)	= helper write out
-				BSONDocument(
-					(Summand.typeTag -> identifier)	+:
-					downcast[BSONDocument](formatted).value
-				)
-			},
-			in => {
-				val formatted	= downcast[BSONDocument](in)
-				val identifier	= downcast[BSONString](formatted valueMap Summand.typeTag)
-				helper read (identifier, formatted)
-			}
-		)
-	}
 }

@@ -1,5 +1,7 @@
 package scbson.serialization
 
+import scala.reflect._
+
 import scutil.lang._
 import scutil.tried._
 
@@ -19,23 +21,23 @@ trait CollectionProtocol {
 	
 	implicit def SetBSONFormat[T:BSONFormat]:BSONFormat[Set[T]]					= SeqBSONFormat[T] compose Bijection(_.toSeq,	_.toSet)
 	implicit def ListBSONFormat[T:BSONFormat]:BSONFormat[List[T]]				= SeqBSONFormat[T] compose Bijection(_.toSeq,	_.toList)
-	implicit def ArrayBSONFormat[T:BSONFormat:Manifest]:BSONFormat[Array[T]]	= SeqBSONFormat[T] compose Bijection(_.toSeq,	_.toArray)
+	implicit def ArrayBSONFormat[T:BSONFormat:ClassTag]:BSONFormat[Array[T]]	= SeqBSONFormat[T] compose Bijection(_.toSeq,	_.toArray)
 	
 	//------------------------------------------------------------------------------
 	
 	/*
-	def mapJSONFormat[S,T:JSONFormat](conv:Bijection[S,String]):JSONFormat[Map[S,T]]	=
-			StringMapJSONFormat[T] compose Bijection[Map[S,T],Map[String,T]](
+	def mapBSONFormat[S,T:BSONFormat](conv:Bijection[S,String]):BSONFormat[Map[S,T]]	=
+			StringMapBSONFormat[T] compose Bijection[Map[S,T],Map[String,T]](
 				_ map { case (k,v) => (conv write k, v) },
 				_ map { case (k,v) => (conv read  k, v) }
 			)
 			
-	implicit def StringMapJSONFormat[T:JSONFormat]:JSONFormat[Map[String,T]]	= new JSONFormat[Map[String,T]] {
-		def write(out:Map[String,T]):JSONValue	=
-				JSONObject(out map { 
+	implicit def StringMapBSONFormat[T:BSONFormat]:BSONFormat[Map[String,T]]	= new BSONFormat[Map[String,T]] {
+		def write(out:Map[String,T]):BSONValue	=
+				BSONObject(out map { 
 					case (k,v) => (k, doWrite[T](v)) 
 				})
-		def read(in:JSONValue):Map[String,T]	= 
+		def read(in:BSONValue):Map[String,T]	= 
 				objectValue(in) map { 
 					case (k,v) => (k, doRead[T](v)) 
 				}
@@ -76,7 +78,7 @@ trait CollectionProtocol {
 	//------------------------------------------------------------------------------
 			
 	// alternative {some} or {none}
-	implicit def OptionJSONFormat[T:BSONFormat]:BSONFormat[Option[T]]	= new BSONFormat[Option[T]] {
+	implicit def OptionBSONFormat[T:BSONFormat]:BSONFormat[Option[T]]	= new BSONFormat[Option[T]] {
 		private val someTag	= "some"
 		private val noneTag	= "none"
 		
