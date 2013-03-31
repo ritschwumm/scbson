@@ -18,8 +18,8 @@ trait SumProtocol {
 
 	def sumBSONFormat[T](partials:Seq[PartialBSONFormat[T]]):BSONFormat[T]	=
 			BSONFormat[T](
-				(it:T)			=> partials flatMapFirst { _ write it } getOrElse fail("no matching constructor found"),
-				(it:BSONValue)	=> partials flatMapFirst { _ read  it } getOrElse fail("no matching constructor found")
+				(it:T)			=> partials collapseFirst { _ write it } getOrElse fail("no matching constructor found"),
+				(it:BSONValue)	=> partials collapseFirst { _ read  it } getOrElse fail("no matching constructor found")
 			)
 			
 	//------------------------------------------------------------------------------
