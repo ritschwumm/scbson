@@ -2,6 +2,7 @@ package scbson.serialization
 
 import scala.reflect._
 
+import scutil.lang._
 import scutil.Implicits._
 
 import scbson._
@@ -11,10 +12,7 @@ import BSONSerializationUtil._
 object SumProtocol extends SumProtocol
 
 trait SumProtocol {
-	trait PartialBSONFormat[T] {
-		def write(value:T):Option[BSONValue]
-		def read(bson:BSONValue):Option[T]
-	}
+	type PartialBSONFormat[T]	= Bichance[T,BSONValue]
 
 	def sumBSONFormat[T](partials:Seq[PartialBSONFormat[T]]):BSONFormat[T]	=
 			BSONFormat[T](
