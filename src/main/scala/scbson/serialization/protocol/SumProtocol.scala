@@ -12,7 +12,7 @@ import BSONSerializationUtil._
 object SumProtocol extends SumProtocol
 
 trait SumProtocol {
-	type PartialBSONFormat[T]	= Bichance[T,BSONValue]
+	type PartialBSONFormat[T]	= PBijection[T,BSONValue]
 
 	def sumBSONFormat[T](partials:Seq[PartialBSONFormat[T]]):BSONFormat[T]	=
 			BSONFormat[T](
