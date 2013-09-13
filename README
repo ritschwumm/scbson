@@ -1,4 +1,4 @@
-BSON utilities for conversion between BSON-ASTs and scala objects.
+BSON utilities for conversion between BSON-ASTs and scala objects
 
 To build this code, get and install SBT from 
     https://github.com/sbt/sbt
