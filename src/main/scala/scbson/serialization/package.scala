@@ -7,18 +7,18 @@ package object serialization {
 	import BSONSerializationUtil._
 	
 	/** convert values to BSON and back */
-	type BSONFormat[T]	= Bijection[T,BSONValue]
+	type Format[T]	= Bijection[T,BSONValue]
 	
-	/** create a BSONFormat from the two halves of a Bijection */
-	def BSONFormat[T](writeFunc:T=>BSONValue, readFunc:BSONValue=>T):BSONFormat[T]	= 
+	/** create a Format from the two halves of a Bijection */
+	def Format[T](writeFunc:T=>BSONValue, readFunc:BSONValue=>T):Format[T]	= 
 			Bijection(writeFunc, readFunc)
 	
 	/** this is a bit of a hack to force a specific constructor to be used for decoding */
-	def BSONFormatSubtype[T,U<:BSONValue](writeFunc:T=>BSONValue, readFunc:U=>T):BSONFormat[T]	= 
-			BSONFormat[T](writeFunc, it => readFunc(downcast(it)))
+	def SubtypeFormat[T,U<:BSONValue](writeFunc:T=>BSONValue, readFunc:U=>T):Format[T]	= 
+			Format[T](writeFunc, it => readFunc(downcast(it)))
 	
-	/** delay the construction of an actual BSONFormat until it's used */
-	def BSONFormatLazy[T](sub: =>BSONFormat[T]):BSONFormat[T]	= new Bijection[T,BSONValue] {
+	/** delay the construction of an actual Format until it's used */
+	def LazyFormat[T](sub: =>Format[T]):Format[T]	= new Bijection[T,BSONValue] {
 		lazy val delegate = sub
 		def write(t:T):BSONValue	= delegate write t
 		def read(s:BSONValue):T		= delegate read s
@@ -26,11 +26,11 @@ package object serialization {
 	
 	//------------------------------------------------------------------------------
 	
-	/** provide a BSONFormat for a specific value type */
-	def bsonFormat[T:BSONFormat]	= implicitly[BSONFormat[T]]
+	/** provide a Format for a specific value type */
+	def format[T:Format]	= implicitly[Format[T]]
 	
-	/** encode a value into its BSON representation using an implicitly provided BSONFormat */
-	def doWrite[T:BSONFormat](it:T):BSONValue	= bsonFormat[T] write it
-	/** decode a value from its BSON representation using an implicitly provided BSONFormat */
-	def doRead[T:BSONFormat](it:BSONValue):T	= bsonFormat[T] read it
+	/** encode a value into its BSON representation using an implicitly provided Format */
+	def doWrite[T:Format](it:T):BSONValue	= format[T] write it
+	/** decode a value from its BSON representation using an implicitly provided Format */
+	def doRead[T:Format](it:BSONValue):T	= format[T] read it
 }

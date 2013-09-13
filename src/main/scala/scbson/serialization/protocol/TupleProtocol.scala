@@ -8,7 +8,7 @@ object TupleProtocol extends TupleProtocol
 
 trait TupleProtocol extends TupleProtocolGenerated {
 	/*
-	implicit def Tuple2BSONFormat[T1:BSONFormat,T2:BSONFormat]:BSONFormat[(T1,T2)]	= new BSONFormat[(T1,T2)] {
+	implicit def Tuple2Format[T1:Format,T2:Format]:Format[(T1,T2)]	= new Format[(T1,T2)] {
 		def write(out:(T1,T2)):BSONValue	= {
 			BSONArray(Seq(
 				doWrite[T1](out._1), 

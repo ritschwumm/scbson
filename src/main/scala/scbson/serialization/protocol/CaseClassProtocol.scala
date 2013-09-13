@@ -11,7 +11,7 @@ import BSONSerializationUtil._
 object CaseClassProtocol extends CaseClassProtocol
 
 trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
-	def caseObjectBSONFormat[T:TypeTag](singleton:T):BSONFormat[T]	= new BSONFormat[T] {
+	def caseObjectFormat[T:TypeTag](singleton:T):Format[T]	= new Format[T] {
 		def write(out:T):BSONValue	= {
 			BSONDocument.empty
 		}
@@ -20,12 +20,12 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 		}
 	}
 	
-	def caseClassBSONFormat1[S1:BSONFormat,T:TypeTag](
+	def caseClassFormat1[S1:Format,T:TypeTag](
 		apply:S1=>T,
 		unapply:T=>Option[S1]
-	):BSONFormat[T]	= {
+	):Format[T]	= {
 		val Seq(k1)	= fieldNamesFor[T]
-		new BSONFormat[T] {
+		new Format[T] {
 			def write(out:T):BSONValue	= {
 				val fields	= unapply(out).get
 				BSONVarDocument(
@@ -42,12 +42,12 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	}
 	
 	/*
-	def caseClassBSONFormat2[S1:BSONFormat,S2:BSONFormat,T:TypeTag](
+	def caseClassFormat2[S1:Format,S2:Format,T:TypeTag](
 		apply:(S1,S2)=>T, 
 		unapply:T=>Option[(S1,S2)]
-	):BSONFormat[T]	= {
+	):Format[T]	= {
 		val Seq(k1,k2)	= fieldNamesFor[T]
-		new BSONFormat[T] {
+		new Format[T] {
 			def write(out:T):BSONValue	= {
 				val fields	= unapply(out).get
 				BSONVarDocument(
@@ -67,11 +67,11 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	*/
 	
 	/** uses a field with an empty name for the specific constructor */
-	def caseClassSumBSONFormat[T](summands:Summand[T,_<:T]*):BSONFormat[T]	=
-			sumBSONFormat(summands map (new InlinePartialBSONFormat(_)))
+	def caseClassSumFormat[T](summands:Summand[T,_<:T]*):Format[T]	=
+			sumFormat(summands map (new InlinePartialFormat(_)))
 		
 	/** injects the type tag as a field with an empty name into an existing object */
-	private class InlinePartialBSONFormat[T,C<:T](summand:Summand[T,C]) extends PartialBSONFormat[T] {
+	private class InlinePartialFormat[T,C<:T](summand:Summand[T,C]) extends PartialFormat[T] {
 		import summand._
 		val typeTag	= ""
 		def write(value:T):Option[BSONValue]	=

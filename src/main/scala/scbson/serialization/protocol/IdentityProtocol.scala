@@ -9,11 +9,11 @@ object IdentityProtocol extends IdentityProtocol
 /** allows serialization and deserialization of BSONValue as BSONValue */
 trait IdentityProtocol {
 	/*
-	implicit val BSONValueBSONFormat:BSONFormat[BSONValue]	= 
-			BSONFormat(identity, identity)
+	implicit val BSONValueFormat:Format[BSONValue]	= 
+			Format(identity, identity)
 	*/
 		
-	implicit def BSONValueBSONFormat[T<:BSONValue]:BSONFormat[T]	= new BSONFormat[T] {
+	implicit def BSONValueFormat[T<:BSONValue]:Format[T]	= new Format[T] {
 		def write(out:T):BSONValue	= out
 		def read(in:BSONValue):T	= downcast(in)
 	}

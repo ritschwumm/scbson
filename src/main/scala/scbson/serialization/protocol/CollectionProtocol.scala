@@ -12,27 +12,27 @@ import BSONSerializationUtil._
 object CollectionProtocol extends CollectionProtocol
 
 trait CollectionProtocol {
-	implicit def SeqBSONFormat[T:BSONFormat]:BSONFormat[Seq[T]]	= {
-		val sub	= bsonFormat[T]
-		BSONFormatSubtype[Seq[T],BSONArray](
+	implicit def SeqFormat[T:Format]:Format[Seq[T]]	= {
+		val sub	= format[T]
+		SubtypeFormat[Seq[T],BSONArray](
 				it	=> BSONArray(it map doWrite[T]),
 				it	=> it.value map sub.read)
 	}
 	
-	implicit def SetBSONFormat[T:BSONFormat]:BSONFormat[Set[T]]					= SeqBSONFormat[T] compose Bijection(_.toSeq,	_.toSet)
-	implicit def ListBSONFormat[T:BSONFormat]:BSONFormat[List[T]]				= SeqBSONFormat[T] compose Bijection(_.toSeq,	_.toList)
-	implicit def ArrayBSONFormat[T:BSONFormat:ClassTag]:BSONFormat[Array[T]]	= SeqBSONFormat[T] compose Bijection(_.toSeq,	_.toArray)
+	implicit def SetFormat[T:Format]:Format[Set[T]]					= SeqFormat[T] compose Bijection(_.toSeq,	_.toSet)
+	implicit def ListFormat[T:Format]:Format[List[T]]				= SeqFormat[T] compose Bijection(_.toSeq,	_.toList)
+	implicit def ArrayFormat[T:Format:ClassTag]:Format[Array[T]]	= SeqFormat[T] compose Bijection(_.toSeq,	_.toArray)
 	
 	//------------------------------------------------------------------------------
 	
 	/*
-	def mapBSONFormat[S,T:BSONFormat](conv:Bijection[S,String]):BSONFormat[Map[S,T]]	=
-			StringMapBSONFormat[T] compose Bijection[Map[S,T],Map[String,T]](
+	def mapFormat[S,T:Format](conv:Bijection[S,String]):Format[Map[S,T]]	=
+			StringMapFormat[T] compose Bijection[Map[S,T],Map[String,T]](
 				_ map { case (k,v) => (conv write k, v) },
 				_ map { case (k,v) => (conv read  k, v) }
 			)
 			
-	implicit def StringMapBSONFormat[T:BSONFormat]:BSONFormat[Map[String,T]]	= new BSONFormat[Map[String,T]] {
+	implicit def StringMapFormat[T:Format]:Format[Map[String,T]]	= new Format[Map[String,T]] {
 		def write(out:Map[String,T]):BSONValue	=
 				BSONObject(out map { 
 					case (k,v) => (k, doWrite[T](v)) 
@@ -45,9 +45,9 @@ trait CollectionProtocol {
 	*/
 	
 	// TODO careful, should sort it's keys maybe
-	implicit def ViaSetMapBSONFormat[K:BSONFormat,V:BSONFormat]:BSONFormat[Map[K,V]]	= new BSONFormat[Map[K,V]] {
+	implicit def ViaSetMapFormat[K:Format,V:Format]:Format[Map[K,V]]	= new Format[Map[K,V]] {
 		// TODO dubious
-		import TupleProtocol.Tuple2BSONFormat
+		import TupleProtocol.Tuple2Format
 		def write(out:Map[K,V]):BSONValue	= doWrite[Set[(K,V)]](out.toSet)
 		def read(in:BSONValue):Map[K,V]		= doRead[Set[(K,V)]](in).toMap
 	}
@@ -62,8 +62,8 @@ trait CollectionProtocol {
 	}
 	
 	// automatically sorts keys alphabetically
-	def sortingDocument[T](writeFunc:T=>Map[String,BSONValue], readFunc:Map[String,BSONValue]=>T):BSONFormat[T]	=
-			BSONFormatSubtype[T,BSONDocument](
+	def sortingDocument[T](writeFunc:T=>Map[String,BSONValue], readFunc:Map[String,BSONValue]=>T):Format[T]	=
+			FormatSubtype[T,BSONDocument](
 					it	=> sortKeys(BSONDocument(writeFunc(it).toSeq)),
 					it	=> readFunc(it.value.toMap))
 		
@@ -71,14 +71,14 @@ trait CollectionProtocol {
 			BSONDocument(doc.value sortBy { _._1 })
 
 	// expects ordered keys
-	def orderedDocument[T](writeFunc:T=>Seq[(String,BSONValue)], readFunc:Map[String,BSONValue]=>T):BSONFormat[T]	=
-			BSONFormatSubtype[T,BSONDocument](it => BSONDocument(writeFunc(it)), it => readFunc(it.value.toMap))
+	def orderedDocument[T](writeFunc:T=>Seq[(String,BSONValue)], readFunc:Map[String,BSONValue]=>T):Format[T]	=
+			FormatSubtype[T,BSONDocument](it => BSONDocument(writeFunc(it)), it => readFunc(it.value.toMap))
 	*/
 	
 	//------------------------------------------------------------------------------
 			
 	// alternative {some} or {none}
-	implicit def OptionBSONFormat[T:BSONFormat]:BSONFormat[Option[T]]	= new BSONFormat[Option[T]] {
+	implicit def OptionFormat[T:Format]:Format[Option[T]]	= new Format[Option[T]] {
 		private val someTag	= "some"
 		private val noneTag	= "none"
 		
@@ -97,7 +97,7 @@ trait CollectionProtocol {
 	}
 	
 	// alternative {left} or {right}
-	implicit def EitherBSONFormat[L:BSONFormat,R:BSONFormat]:BSONFormat[Either[L,R]]	= new BSONFormat[Either[L,R]] {
+	implicit def EitherFormat[L:Format,R:Format]:Format[Either[L,R]]	= new Format[Either[L,R]] {
 		private val rightTag	= "right"
 		private val leftTag		= "left"
 		
@@ -119,7 +119,7 @@ trait CollectionProtocol {
 		}
 	}
 	
-	implicit def TriedBSONFormat[F:BSONFormat,W:BSONFormat]:BSONFormat[Tried[F,W]]	= new BSONFormat[Tried[F,W]] {
+	implicit def TriedFormat[F:Format,W:Format]:Format[Tried[F,W]]	= new Format[Tried[F,W]] {
 		private val winTag	= "win"
 		private val failTag	= "fail"
 		
