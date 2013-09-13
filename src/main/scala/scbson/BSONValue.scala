@@ -2,7 +2,7 @@ package scbson
 
 import java.util.{ Arrays => JArrays }
 
-import scutil.time.Instant
+import scutil.time.MilliInstant
 
 object BSONValue {
 	def typeId[T<:BSONValue:Manifest]:Int	= {
@@ -88,7 +88,7 @@ case class Tri(value:Int)
 
 case class BSONBoolean(value:Boolean)								extends BSONValue
 
-case class BSONDate(value:Instant)									extends BSONValue
+case class BSONDate(value:MilliInstant)								extends BSONValue
 
 case object BSONNull 												extends BSONValue
 
