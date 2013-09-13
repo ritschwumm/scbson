@@ -8,6 +8,7 @@ import scbson._
 object NativeProtocol extends NativeProtocol
 
 trait NativeProtocol {
+	implicit lazy val UnitBSONFormat	= BSONFormat[Unit](constant(BSONDocument.empty), constant(()))
 	implicit lazy val NullBSONFormat	= BSONFormat[Null](constant(BSONNull),	constant(null))
 	implicit lazy val BooleanBSONFormat	= BSONFormatSubtype[Boolean,	BSONBoolean](BSONBoolean.apply,	_.value)
 	implicit lazy val IntBSONFormat		= BSONFormatSubtype[Int,		BSONInt]	(BSONInt.apply, 	_.value)
