@@ -2,15 +2,14 @@ name			:= "scbson"
 
 organization	:= "de.djini"
 
-version			:= "0.22.0"
+version			:= "0.23.0"
 
 scalaVersion	:= "2.10.2"
 
 libraryDependencies	++= Seq(
-	"de.djini"		%%	"scutil"	% "0.24.0"	% "compile"
+	"de.djini"			%%	"scutil"		% "0.25.0"				% "compile",
+	"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile"
 )
-
-libraryDependencies	<+= (scalaVersion) { "org.scala-lang" % "scala-reflect" % _ }
 
 scalacOptions	++= Seq(
 	"-deprecation", 
