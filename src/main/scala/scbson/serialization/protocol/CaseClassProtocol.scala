@@ -2,6 +2,7 @@ package scbson.serialization
 
 import reflect.runtime.universe._
 
+import scutil.lang._
 import scutil.Implicits._
 
 import scbson._
@@ -11,34 +12,25 @@ import BSONSerializationUtil._
 object CaseClassProtocol extends CaseClassProtocol
 
 trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
-	def caseObjectFormat[T:TypeTag](singleton:T):Format[T]	= new Format[T] {
-		def write(out:T):BSONValue	= {
-			BSONDocument.empty
-		}
-		def read(in:BSONValue):T	= {
-			singleton
-		}
-	}
+	def caseObjectFormat[T:TypeTag](singleton:T):Format[T]	=
+			Format[T](constant(BSONDocument.empty), constant(singleton))
 	
-	def caseClassFormat1[S1:Format,T:TypeTag](
-		apply:S1=>T,
-		unapply:T=>Option[S1]
-	):Format[T]	= {
+	def caseClassFormat1[S1:Format,T:TypeTag](apply:S1=>T, unapply:T=>Option[S1]):Format[T]	= {
 		val Seq(k1)	= fieldNamesFor[T]
-		new Format[T] {
-			def write(out:T):BSONValue	= {
+		Format[T](
+			(out:T)	=> {
 				val fields	= unapply(out).get
-				BSONVarDocument(
+				BSONDocument(Seq(
 					k1	-> doWrite[S1](fields)
-				)
-			}
-			def read(in:BSONValue):T	= {
-				val map	= forceMap(in)
+				))
+			},
+			(in:BSONValue)	=> {
+				val map	= documentMap(in)
 				apply(
 					doRead[S1](map(k1))
 				)
 			}
-		}
+		)
 	}
 	
 	/*
@@ -56,7 +48,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 				)
 			}
 			def read(in:BSONValue):T	= {
-				val map	= forceMap(in)
+				val map	= documentMap(in)
 				apply(
 					doRead[S1](map(k1)),
 					doRead[S2](map(k2))
@@ -68,10 +60,10 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	
 	/** uses a field with an empty name for the specific constructor */
 	def caseClassSumFormat[T](summands:Summand[T,_<:T]*):Format[T]	=
-			sumFormat(summands map (new InlinePartialFormat(_)))
+			sumFormat(summands map (new InlinePartialFormat(_).pf))
 		
 	/** injects the type tag as a field with an empty name into an existing object */
-	private class InlinePartialFormat[T,C<:T](summand:Summand[T,C]) extends PartialFormat[T] {
+	private class InlinePartialFormat[T,C<:T](summand:Summand[T,C]) {
 		import summand._
 		val typeTag	= ""
 		def write(value:T):Option[BSONValue]	=
@@ -80,9 +72,11 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 					downcast[BSONDocument](format write it)
 				}
 		def read(bson:BSONValue):Option[T]	=
-				downcast[BSONDocument](bson).value 
+				documentValue(bson) 
 				.exists	{ _ == (typeTag, BSONString(identifier)) } 
 				.guard	{ format read bson }
+				
+		def pf:PartialFormat[T]	= PBijection(write, read)
 	}
 		
 	// BETTER cache results
@@ -96,7 +90,4 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 				yield paramNames map { _.name.decoded }
 		names getOrError ("cannot get fields for type " + typ)
 	}
-	
-	protected def forceMap(in:BSONValue):Map[String,BSONValue]	=
-			downcast[BSONDocument](in).valueMap
 }

@@ -51,7 +51,7 @@ case class BSONDocument(value:Seq[(String,BSONValue)])				extends BSONValue {
 }
 
 object BSONArray {
-	val empty	= BSONArray(Seq.empty)
+	val empty	= BSONVarArray()
 }
 case class BSONArray(value:Seq[BSONValue])							extends BSONValue {
 	def get(index:Int):Option[BSONValue]	= value lift index
@@ -86,7 +86,18 @@ case class BSONObjectId(seconds:Int, machine:Tri, pid:Short, inc:Tri)	extends BS
 case class Tri(value:Int)
 */
 
-case class BSONBoolean(value:Boolean)								extends BSONValue
+object BSONBoolean {
+	def apply(value:Boolean):BSONBoolean			= if (value) BSONTrue else BSONFalse
+	def unapply(value:BSONBoolean):Option[Boolean]	= Some(value.value)
+}
+sealed abstract class BSONBoolean extends BSONValue {
+	def value:Boolean	= this match {
+		case BSONTrue	=> true
+		case BSONFalse	=> false
+	}
+}
+case object BSONTrue	extends BSONBoolean
+case object BSONFalse	extends BSONBoolean
 
 case class BSONDate(value:MilliInstant)								extends BSONValue
 

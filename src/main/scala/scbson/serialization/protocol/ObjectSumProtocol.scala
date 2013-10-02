@@ -1,5 +1,6 @@
 package scbson.serialization
 
+import scutil.lang._
 import scutil.Implicits._
 
 import scbson._
@@ -8,10 +9,10 @@ object ObjectSumProtocol extends ObjectSumProtocol
 
 trait ObjectSumProtocol extends SumProtocol {
 	def objectSumFormat[T](summands:Summand[T,_<:T]*):Format[T]	=
-			sumFormat(summands map (new ObjectPartialFormat(_)))
+			sumFormat(summands map (new ObjectPartialFormat(_).pf))
 	
 	/** uses an object with a single field where the identifier is the key */
-	private class ObjectPartialFormat[T,C<:T](summand:Summand[T,C]) extends PartialFormat[T] {
+	private class ObjectPartialFormat[T,C<:T](summand:Summand[T,C]) {
 		import summand._
 		def write(value:T):Option[BSONValue]	=
 				castValue(value) map { it =>
@@ -19,7 +20,9 @@ trait ObjectSumProtocol extends SumProtocol {
 				}
 		def read(bson:BSONValue):Option[T]	=
 				bson matchOption {
-					case BSONDocument(Seq((`identifier`, data)))	=> format read data
+					case BSONVarDocument((`identifier`, data))	=> format read data
 				}
+				
+		def pf:PartialFormat[T]	= PBijection(write, read)
 	}
 }

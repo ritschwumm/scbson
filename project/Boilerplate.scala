@@ -31,7 +31,6 @@ object Boilerplate {
 		""".stripMargin		+ 
 		(2 to 22 map genTupleMethod mkString "\n")	+
 		"""
-		|	protected def forceArray(in:BSONValue):Seq[BSONValue]
 		|}
 		""".stripMargin
 	}
@@ -41,15 +40,16 @@ object Boilerplate {
 		val typeParams	= awc("T$:Format") 
 		val typeNames	= awc("T$")
 		("""
-		|	implicit def Tuple"""+arity+"""Format["""+typeParams+"""]:Format[("""+typeNames+""")]	= new Format[("""+typeNames+""")] {
-		|		def write(out:("""+typeNames+""")):BSONValue	= {
-		|			BSONArray(Seq("""+ awc("doWrite[T$](out._$)")	+"""))
-		|		}
-		|		def read(in:BSONValue):("""+typeNames+""")	= {
-		|			val	arr	= forceArray(in)
-		|			("""+ awc("doRead[T$](arr($-1))") + """)
-		|		}
-		|	}
+		|	implicit def Tuple"""+arity+"""Format["""+typeParams+"""]:Format[("""+typeNames+""")]	=
+		|			Format[("""+typeNames+""")](
+		|				(out:("""+typeNames+"""))	=> {
+		|					BSONVarArray("""+ awc("doWrite[T$](out._$)")	+""")
+		|				},
+		|				(in:BSONValue)	=> {
+		|					val	arr	= arrayValue(in)
+		|					("""+ awc("doRead[T$](arr($-1))") +	""")
+		|				}
+		|			)
 		""").stripMargin
 	}
 	
@@ -76,7 +76,6 @@ object Boilerplate {
 		(2 to 22 map genCaseClassMethod mkString "\n")	+
 		"""
 		|	protected def fieldNamesFor[T:TypeTag]:Seq[String]
-		|	protected def forceMap(in:BSONValue):Map[String,BSONValue]
 		|}
 		""".stripMargin
 	}
@@ -89,16 +88,16 @@ object Boilerplate {
 		("""
 		|	def caseClassFormat"""+arity+"""["""+typeParams+""",T:TypeTag](apply:("""+typeNames+""")=>T, unapply:T=>Option[("""+typeNames+""")]):Format[T]	= {
 		|		val Seq("""+fieldNames+""")	= fieldNamesFor[T]
-		|		new Format[T] {
-		|			def write(out:T):BSONValue	= {
+		|		Format[T](
+		|			(out:T)	=> {
 		|				val fields	= unapply(out).get
 		|				BSONVarDocument(""" + awc("k$ -> doWrite[S$](fields._$)") + """)
-		|			}
-		|			def read(in:BSONValue):T	= {
-		|				val map	= forceMap(in)
+		|			},
+		|			(in:BSONValue)	=> {
+		|				val map	= documentMap(in)
 		|				apply(""" + awc("doRead[S$](map(k$))") + """)
 		|			}
-		|		}
+		|		)
 		|	}
 		""").stripMargin
 	}

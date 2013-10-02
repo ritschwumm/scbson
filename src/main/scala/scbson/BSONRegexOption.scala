@@ -3,24 +3,24 @@ package scbson
 import scutil.lang._
 import scutil.Implicits._
 
-object BSONRegexOptionMarshaller extends Marshaller[BSONRegexOption,Char] {
-	def write(it:BSONRegexOption):Char	= it match {
-		case RegexCaseInsensitive	=> 'i'
-		case RegexMultiline			=> 'm'
-		case RegexDotall			=> 's'
-		case RegexUnicode			=> 'u'
-		case RegexLocalized			=> 'l'
-		case RegexExtended			=> 'x'
-	}
-	
-	def read(it:Char):Option[BSONRegexOption]	= it matchOption {
-		case 'i'	=> RegexCaseInsensitive
-		case 'm'	=> RegexMultiline
-		case 's'	=> RegexDotall
-		case 'u'	=> RegexUnicode
-		case 'l'	=> RegexLocalized
-		case 'x'	=> RegexExtended
-	}
+object BSONRegexOption {
+	val marshaller	= Marshaller[BSONRegexOption,Char](
+		_ match {
+			case RegexCaseInsensitive	=> 'i'
+			case RegexMultiline			=> 'm'
+			case RegexDotall			=> 's'
+			case RegexUnicode			=> 'u'
+			case RegexLocalized			=> 'l'
+			case RegexExtended			=> 'x'
+		},
+		_ matchOption {
+			case 'i'	=> RegexCaseInsensitive
+			case 'm'	=> RegexMultiline
+			case 's'	=> RegexDotall
+			case 'u'	=> RegexUnicode
+			case 'l'	=> RegexLocalized
+			case 'x'	=> RegexExtended
+		})
 }
 
 // TODO maybe add
