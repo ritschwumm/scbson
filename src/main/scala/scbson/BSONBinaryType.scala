@@ -1,7 +1,7 @@
 package scbson
 
 import scutil.lang._
-import scutil.Implicits._
+import scutil.implicits._
 
 object BSONBinaryType {
 	val marshaller	= Marshaller[BSONBinaryType,Byte](

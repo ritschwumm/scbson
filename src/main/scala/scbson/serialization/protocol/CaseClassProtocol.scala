@@ -3,7 +3,7 @@ package scbson.serialization
 import reflect.runtime.universe._
 
 import scutil.lang._
-import scutil.Implicits._
+import scutil.implicits._
 
 import scbson._
 
