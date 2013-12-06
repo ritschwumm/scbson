@@ -8,7 +8,7 @@ object IdentityProtocol extends IdentityProtocol
 
 /** allows serialization and deserialization of BSONValue as BSONValue */
 trait IdentityProtocol {
-	implicit def BSONValueFormat[T<:BSONValue]:Format[T]	=
+	implicit def PassThroughFormat[T<:BSONValue]:Format[T]	=
 			Format[T](
 				identity,
 				downcast[T]

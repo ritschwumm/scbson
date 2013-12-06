@@ -16,7 +16,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 			Format[T](constant(BSONDocument.empty), constant(singleton))
 	
 	def caseClassFormat1[S1:Format,T:TypeTag](apply:S1=>T, unapply:T=>Option[S1]):Format[T]	= {
-		val Seq(k1)	= fieldNamesFor[T]
+		val Seq(k1)	= caseClassFieldNames[T]
 		Format[T](
 			(out:T)	=> {
 				val fields	= unapply(out).get
@@ -38,7 +38,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 		apply:(S1,S2)=>T, 
 		unapply:T=>Option[(S1,S2)]
 	):Format[T]	= {
-		val Seq(k1,k2)	= fieldNamesFor[T]
+		val Seq(k1,k2)	= caseClassFieldNames[T]
 		new Format[T] {
 			def write(out:T):BSONValue	= {
 				val fields	= unapply(out).get
@@ -80,7 +80,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	}
 		
 	// BETTER cache results
-	protected def fieldNamesFor[T:TypeTag]:Seq[String]	= {
+	protected def caseClassFieldNames[T:TypeTag]:Seq[String]	= {
 		val typ	= typeOf[T]
 		val names:Option[Seq[String]]	=
 				for {
