@@ -4,23 +4,25 @@ import scutil.lang._
 import scutil.implicits._
 
 object BSONRegexOption {
-	val marshaller	= Marshaller[BSONRegexOption,Char](
-		_ match {
-			case RegexCaseInsensitive	=> 'i'
-			case RegexMultiline			=> 'm'
-			case RegexDotall			=> 's'
-			case RegexUnicode			=> 'u'
-			case RegexLocalized			=> 'l'
-			case RegexExtended			=> 'x'
-		},
-		_ matchOption {
-			case 'i'	=> RegexCaseInsensitive
-			case 'm'	=> RegexMultiline
-			case 's'	=> RegexDotall
-			case 'u'	=> RegexUnicode
-			case 'l'	=> RegexLocalized
-			case 'x'	=> RegexExtended
-		})
+	val prism	=
+			Prism[Char,BSONRegexOption](
+				_ matchOption {
+					case 'i'	=> RegexCaseInsensitive
+					case 'm'	=> RegexMultiline
+					case 's'	=> RegexDotall
+					case 'u'	=> RegexUnicode
+					case 'l'	=> RegexLocalized
+					case 'x'	=> RegexExtended
+				},
+				_ match {
+					case RegexCaseInsensitive	=> 'i'
+					case RegexMultiline			=> 'm'
+					case RegexDotall			=> 's'
+					case RegexUnicode			=> 'u'
+					case RegexLocalized			=> 'l'
+					case RegexExtended			=> 'x'
+				}
+			)
 }
 
 // TODO maybe add
