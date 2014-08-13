@@ -14,7 +14,7 @@ object SumProtocol extends SumProtocol
 trait SumProtocol {
 	type PartialFormat[T]	= PBijection[T,BSONValue]
 
-	def sumFormat[T](partials:Seq[PartialFormat[T]]):Format[T]	=
+	def sumFormat[T](partials:ISeq[PartialFormat[T]]):Format[T]	=
 			Format[T](
 				(it:T)			=> partials collapseFirst { _ write it } getOrElse fail("no matching constructor found"),
 				(it:BSONValue)	=> partials collapseFirst { _ read  it } getOrElse fail("no matching constructor found")

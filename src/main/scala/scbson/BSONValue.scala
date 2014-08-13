@@ -2,6 +2,7 @@ package scbson
 
 import java.util.{ Arrays => JArrays }
 
+import scutil.lang._
 import scutil.time.MilliInstant
 
 object BSONValue {
@@ -42,9 +43,9 @@ case class BSONDouble(value:Double)									extends BSONValue
 case class BSONString(value:String)									extends BSONValue
 
 object BSONDocument {
-	val empty	= BSONDocument(Seq.empty)
+	val empty	= BSONDocument(ISeq.empty)
 }
-case class BSONDocument(value:Seq[(String,BSONValue)])				extends BSONValue {
+case class BSONDocument(value:ISeq[(String,BSONValue)])				extends BSONValue {
 	def get(key:String):Option[BSONValue]	= value collectFirst { case (k,v) if (k == key) => v }
 	def ++ (that:BSONDocument):BSONDocument	= BSONDocument(this.value ++ that.value)
 	def valueMap:Map[String,BSONValue]		= value.toMap
@@ -53,7 +54,7 @@ case class BSONDocument(value:Seq[(String,BSONValue)])				extends BSONValue {
 object BSONArray {
 	val empty	= BSONVarArray()
 }
-case class BSONArray(value:Seq[BSONValue])							extends BSONValue {
+case class BSONArray(value:ISeq[BSONValue])							extends BSONValue {
 	def get(index:Int):Option[BSONValue]	= value lift index
 	def ++ (that:BSONArray):BSONArray		= BSONArray(this.value ++ that.value)
 }

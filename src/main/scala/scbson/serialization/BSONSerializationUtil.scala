@@ -1,5 +1,7 @@
 package scbson.serialization
 
+import scutil.lang._
+
 import scbson._
 
 object BSONSerializationUtil {
@@ -21,13 +23,13 @@ object BSONSerializationUtil {
 				case _						=> fail("expected a BSONDocument")
 			}
 	
-	def documentValue(it:BSONValue):Seq[(String,BSONValue)]	=
+	def documentValue(it:BSONValue):ISeq[(String,BSONValue)]	=
 			it match {
 				case BSONDocument(value)	=> value
 				case _						=> fail("expected a BSONDocument")
 			}
 			
-	def arrayValue(it:BSONValue):Seq[BSONValue]	=
+	def arrayValue(it:BSONValue):ISeq[BSONValue]	=
 			it match {
 				case BSONArray(value)	=> value
 				case _					=> fail("expected a BSONArray")

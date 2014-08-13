@@ -1,13 +1,13 @@
 package scbson
 
-import scutil.lang.Bijection
+import scutil.lang._
 import scutil.time.MilliInstant
 
 object BSONBijections {
 	val bsonDouble		= Bijection[BSONDouble,Double]							(_.value,	BSONDouble(_))
 	val bsonString		= Bijection[BSONString,String]							(_.value,	BSONString(_))
-	val bsonDocument	= Bijection[BSONDocument,Seq[(String,BSONValue)]]		(_.value,	BSONDocument(_))
-	val bsonArray		= Bijection[BSONArray,Seq[BSONValue]]					(_.value,	BSONArray(_))
+	val bsonDocument	= Bijection[BSONDocument,ISeq[(String,BSONValue)]]		(_.value,	BSONDocument(_))
+	val bsonArray		= Bijection[BSONArray,ISeq[BSONValue]]					(_.value,	BSONArray(_))
 	val bsonBinary		= Bijection[BSONBinary,(Array[Byte], BSONBinaryType)]	(BSONBinary			unapply _ get, BSONBinary.tupled)
 	val bsonObjectId	= Bijection[BSONObjectId,Array[Byte]]					(_.bytes,	BSONObjectId(_))
 	val bsonBoolean		= Bijection[BSONBoolean,Boolean]						(_.value,	BSONBoolean(_))
