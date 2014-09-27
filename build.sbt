@@ -2,12 +2,12 @@ name			:= "scbson"
 
 organization	:= "de.djini"
 
-version			:= "0.50.0"
+version			:= "0.51.0"
 
 scalaVersion	:= "2.11.2"
 
 libraryDependencies	++= Seq(
-	"de.djini"			%%	"scutil-core"	% "0.50.0"				% "compile",
+	"de.djini"			%%	"scutil-core"	% "0.51.0"				% "compile",
 	"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile"
 )
 
