@@ -62,10 +62,12 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	def caseClassSumFormat[T](summands:Summand[T,_<:T]*):Format[T]	=
 			sumFormat(summands.toVector map (new InlinePartialFormat(_).pf))
 		
+	private val typeTag	= ""
+	
 	/** injects the type tag as a field with an empty name into an existing object */
 	private class InlinePartialFormat[T,C<:T](summand:Summand[T,C]) {
 		import summand._
-		val typeTag	= ""
+		
 		def write(value:T):Option[BSONValue]	=
 				castValue(value) map { it =>
 					BSONVarDocument(typeTag -> BSONString(identifier)) ++ 
