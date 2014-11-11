@@ -1,6 +1,6 @@
 package scbson.serialization
 
-import scala.reflect._
+import scala.reflect.ClassTag
 
 import scutil.lang._
 
@@ -11,26 +11,17 @@ import BSONSerializationUtil._
 object CollectionProtocol extends CollectionProtocol
 
 trait CollectionProtocol {
-	/*
-	implicit def ISeqFormat[T:Format]:Format[ISeq[T]]	= {
-		val sub	= format[T]
-		SubtypeFormat[ISeq[T],BSONArray](
-			it	=> BSONArray(it map doWrite[T]),
-			it	=> it.value map sub.read
+	implicit def SetFormat[T](implicit ev:Format[ISeq[T]]):Format[Set[T]]				= ev compose Bijection(_.toVector,	_.toSet)
+	implicit def ListFormat[T](implicit ev:Format[ISeq[T]]):Format[List[T]]				= ev compose Bijection(_.toVector,	_.toList)
+	implicit def ArrayFormat[T:ClassTag](implicit ev:Format[ISeq[T]]):Format[Array[T]]	= ev compose Bijection(_.toVector,	_.toArray)
+	
+	// TODO careful, should sort it's keys maybe
+	implicit def MapViaSetFormat[K:Format,V:Format](implicit ev:Format[Set[(K,V)]]):Format[Map[K,V]]	= {
+		Format[Map[K,V]](
+			(out:Map[K,V])	=> ev write out.toSet,
+			(in:BSONValue)	=> (ev read in).toMap
 		)
 	}
-	*/
-	implicit def ISeqFormat[T:Format]:Format[ISeq[T]] = 
-			Format[ISeq[T]](
-				(out:ISeq[T])	=> BSONArray(out map doWrite[T]),
-				(in:BSONValue)	=> arrayValue(in) map doRead[T]
-			)
-	
-	implicit def SetFormat[T:Format]:Format[Set[T]]					= ISeqFormat[T] compose Bijection(_.toVector,	_.toSet)
-	implicit def ListFormat[T:Format]:Format[List[T]]				= ISeqFormat[T] compose Bijection(_.toVector,	_.toList)
-	implicit def ArrayFormat[T:Format:ClassTag]:Format[Array[T]]	= ISeqFormat[T] compose Bijection(_.toVector,	_.toArray)
-	
-	//------------------------------------------------------------------------------
 	
 	/*
 	def mapFormat[S,T:Format](conv:Bijection[S,String]):Format[Map[S,T]]	=
@@ -39,27 +30,22 @@ trait CollectionProtocol {
 				_ map { case (k,v) => (conv read  k, v) }
 			)
 			
-	implicit def StringMapFormat[T:Format]:Format[Map[String,T]]	= new Format[Map[String,T]] {
-		def write(out:Map[String,T]):BSONValue	=
-				BSONObject(out map { 
-					case (k,v) => (k, doWrite[T](v)) 
-				})
-		def read(in:BSONValue):Map[String,T]	= 
-				objectValue(in) map { 
-					case (k,v) => (k, doRead[T](v)) 
+	implicit def StringMapFormat[T:Format]:Format[Map[String,T]]	=
+			Format[Map[String,T]](
+				(out:Map[String,T])	=> {
+					BSONDocument(out.toVector map { 
+						case (k,v) => (k, doWrite[T](v)) 
+					})
+				},
+				(in:BSONValue)	=> { 
+					documentValue(in) 
+					.map { 
+						case (k,v) => (k, doRead[T](v)) 
+					}
+					.toMap
 				}
-	}
+			)
 	*/
-	
-	// TODO careful, should sort it's keys maybe
-	implicit def MapViaSetFormat[K:Format,V:Format]:Format[Map[K,V]]	= {
-		// TODO dubious
-		import TupleProtocol.Tuple2Format
-		Format[Map[K,V]](
-			(out:Map[K,V])	=> doWrite[Set[(K,V)]](out.toSet),
-			(in:BSONValue)	=> doRead[Set[(K,V)]](in).toMap
-		)
-	}
 	
 	/*
 	// NOTE mongo keys should be ordered
@@ -83,73 +69,4 @@ trait CollectionProtocol {
 	def orderedDocument[T](writeFunc:T=>ISeq[(String,BSONValue)], readFunc:Map[String,BSONValue]=>T):Format[T]	=
 			FormatSubtype[T,BSONDocument](it => BSONDocument(writeFunc(it)), it => readFunc(it.value.toMap))
 	*/
-	
-	//------------------------------------------------------------------------------
-			
-	private val someTag	= "some"
-	private val noneTag	= "none"
-	
-	// alternative {some} or {none}
-	implicit def OptionFormat[T:Format]:Format[Option[T]]	=
-			Format[Option[T]](
-				_ match {
-					case Some(value)	=> BSONVarDocument(someTag -> doWrite(value))
-					case None			=> BSONVarDocument(noneTag -> BSONBoolean(true))
-				},
-				(in:BSONValue)	=> {
-					val map	= documentMap(in)
-					(map get someTag, map get noneTag) match {
-						case (Some(js), None)	=> Some(doRead[T](js))
-						case (None, Some(js))	=> None
-						case _					=> fail("unexpected option")
-					}
-				}
-			)
-	
-	private val rightTag	= "right"
-	private val leftTag		= "left"
-	
-	// alternative {left} or {right}
-	implicit def EitherFormat[L:Format,R:Format]:Format[Either[L,R]]	=
-			Format[Either[L,R]]( 
-				_ match {
-					case Right(value)	=>  BSONVarDocument(
-						rightTag	-> doWrite[R](value)
-					)
-					case Left(value)	=>  BSONVarDocument(
-						leftTag		-> doWrite[L](value)
-					)
-				},
-				(in:BSONValue)	=> {
-					val map	= documentMap(in)
-					(map get leftTag, map get rightTag) match {
-						case (None, Some(js))	=> Right(doRead[R](js))
-						case (Some(js), None)	=> Left(doRead[L](js))
-						case _					=> fail("unexpected either")
-					}
-				}
-			)
-	
-	private val winTag	= "win"
-	private val failTag	= "fail"
-	
-	implicit def TriedFormat[F:Format,W:Format]:Format[Tried[F,W]]	=
-			Format[Tried[F,W]]( 
-				_ match {
-					case Fail(value)	=> BSONVarDocument(
-						failTag	-> doWrite[F](value)
-					)
-					case Win(value)		=> BSONVarDocument(
-						winTag	-> doWrite[W](value)
-					)
-				},
-				(in:BSONValue)	=> { 
-					val map	= documentMap(in)
-					(map get failTag, map get winTag) match {
-						case (Some(bs), None)	=> Fail(doRead[F](bs))
-						case (None, Some(bs))	=> Win(doRead[W](bs))
-						case _					=> fail("unexpected trial")
-					}
-				}
-			)
 }
