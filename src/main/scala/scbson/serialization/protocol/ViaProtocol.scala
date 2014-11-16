@@ -2,8 +2,6 @@ package scbson.serialization
 
 import scutil.lang._
 
-import scbson._
-
 object ViaProtocol extends ViaProtocol
 
 trait ViaProtocol {

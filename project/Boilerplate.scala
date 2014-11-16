@@ -23,7 +23,6 @@ object Boilerplate {
 		"""
 		|package scbson.serialization
 		|
-		|import scutil.implicits._
 		|import scbson._
 		|import BSONSerializationUtil._
 		|
@@ -66,7 +65,6 @@ object Boilerplate {
 		"""
 		|package scbson.serialization
 		|
-		|import scutil.implicits._
 		|import scutil.lang.Fielder
 		|import scutil.lang.Fielding
 		|import scutil.lang.ISeq

@@ -6,8 +6,6 @@ import scutil.lang._
 
 import scbson._
 
-import BSONSerializationUtil._
-
 object CollectionProtocol extends CollectionProtocol
 
 trait CollectionProtocol {

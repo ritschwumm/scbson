@@ -1,6 +1,5 @@
 package scbson
 
-import scbson._
 import scbson.serialization._
 
 package object syntax {

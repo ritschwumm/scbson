@@ -1,9 +1,5 @@
 package scbson.serialization
 
-import scbson._
-
-import BSONSerializationUtil._
-
 object TupleProtocol extends TupleProtocol
 
 trait TupleProtocol extends TupleProtocolGenerated {
