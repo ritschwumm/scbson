@@ -1,11 +1,8 @@
 name			:= "scbson"
-
 organization	:= "de.djini"
-
-version			:= "0.58.0"
+version			:= "0.59.0"
 
 scalaVersion	:= "2.11.4"
-
 scalacOptions	++= Seq(
 	"-deprecation", 
 	"-unchecked",
@@ -24,8 +21,7 @@ scalacOptions	++= Seq(
 (sourceGenerators in Compile)	<+= (sourceManaged in Compile) map Boilerplate.generate
 
 conflictManager	:= ConflictManager.strict
-
 libraryDependencies	++= Seq(
-	"de.djini"			%%	"scutil-core"	% "0.58.0"				% "compile",
+	"de.djini"			%%	"scutil-core"	% "0.59.0"				% "compile",
 	"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile"
 )
