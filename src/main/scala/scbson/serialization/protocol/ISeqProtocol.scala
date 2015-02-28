@@ -9,7 +9,7 @@ import BSONSerializationUtil._
 object ISeqProtocol extends ISeqProtocol
 
 trait ISeqProtocol {
-	implicit def ISeqFormat[T:Format]:Format[ISeq[T]] = 
+	implicit def ISeqFormat[T:Format]:Format[ISeq[T]] =
 			Format[ISeq[T]](
 				(out:ISeq[T])	=> BSONArray(out map doWrite[T]),
 				(in:BSONValue)	=> arrayValue(in) map doRead[T]

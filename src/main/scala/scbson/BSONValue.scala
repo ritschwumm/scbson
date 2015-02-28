@@ -66,7 +66,7 @@ case class BSONBinary(value:Array[Byte], subtype:BSONBinaryType)	extends BSONVal
 		case _											=> false
 	}
 	def canEqual(that:Any):Boolean	= that.isInstanceOf[BSONBinary]
-	override def hashCode():Int		= subtype.hashCode + (JArrays hashCode value) 
+	override def hashCode():Int		= subtype.hashCode + (JArrays hashCode value)
 }
 
 // deprecated
@@ -79,7 +79,7 @@ case class BSONObjectId(bytes:Array[Byte])							extends BSONValue {
 		case _											=> false
 	}
 	def canEqual(that:Any):Boolean	= that.isInstanceOf[BSONObjectId]
-	override def hashCode():Int		= (JArrays hashCode bytes) 
+	override def hashCode():Int		= (JArrays hashCode bytes)
 }
 /*
 case class BSONObjectId(seconds:Int, machine:Tri, pid:Short, inc:Tri)	extends BSONValue

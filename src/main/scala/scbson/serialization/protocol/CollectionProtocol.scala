@@ -31,14 +31,14 @@ trait CollectionProtocol {
 	implicit def StringMapFormat[T:Format]:Format[Map[String,T]]	=
 			Format[Map[String,T]](
 				(out:Map[String,T])	=> {
-					BSONDocument(out.toVector map { 
-						case (k,v) => (k, doWrite[T](v)) 
+					BSONDocument(out.toVector map {
+						case (k,v) => (k, doWrite[T](v))
 					})
 				},
-				(in:BSONValue)	=> { 
-					documentValue(in) 
-					.map { 
-						case (k,v) => (k, doRead[T](v)) 
+				(in:BSONValue)	=> {
+					documentValue(in)
+					.map {
+						case (k,v) => (k, doRead[T](v))
 					}
 					.toMap
 				}
@@ -50,7 +50,7 @@ trait CollectionProtocol {
 	implicit def MapF[T:BFormat]:BFormat[Map[String,T]]	= {
 		val sub	= bformat[T]
 		BFormatIn[Map[String,T],BSONDocument](
-				it	=> BSONDocument(it.toSeq map { case (k,v) => (k, sub write v) }), 
+				it	=> BSONDocument(it.toSeq map { case (k,v) => (k, sub write v) }),
 				it	=> it.value map { case (k,v) => (k, sub read v) } toMap)
 	}
 	

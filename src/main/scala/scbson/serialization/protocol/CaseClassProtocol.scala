@@ -35,7 +35,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	
 	/*
 	def caseClassFormat2[S1:Format,S2:Format,T:Fielding](
-		apply:(S1,S2)=>T, 
+		apply:(S1,S2)=>T,
 		unapply:T=>Option[(S1,S2)]
 	):Format[T]	= {
 		val ISeq(k1,k2)	= Fielder[T]
@@ -70,12 +70,12 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 		
 		def write(value:T):Option[BSONValue]	=
 				castValue(value) map { it =>
-					BSONVarDocument(typeTag -> BSONString(identifier)) ++ 
+					BSONVarDocument(typeTag -> BSONString(identifier)) ++
 					downcast[BSONDocument](format write it)
 				}
 		def read(bson:BSONValue):Option[T]	=
-				documentValue(bson) 
-				.exists	{ _ == (typeTag, BSONString(identifier)) } 
+				documentValue(bson)
+				.exists	{ _ == (typeTag, BSONString(identifier)) }
 				.guard	{ format read bson }
 				
 		def pf:PartialFormat[T]	= PBijection(write, read)
