@@ -34,4 +34,12 @@ object BSONSerializationUtil {
 				case BSONArray(value)	=> value
 				case _					=> fail("expected a BSONArray")
 			}
+			
+	//------------------------------------------------------------------------------
+	
+	def unapplyTotal[S,T](unapply:S=>Option[T], value:S):T	=
+			unapply(value) match {
+				case Some(x)	=> x
+				case None		=> sys error "expected unapply to be total"
+			}
 }

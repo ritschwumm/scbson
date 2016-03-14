@@ -38,14 +38,14 @@ sealed abstract class BSONValue {
 			catch { case e:ClassCastException => None }
 }
 
-case class BSONDouble(value:Double)									extends BSONValue
+final case class BSONDouble(value:Double)									extends BSONValue
 
-case class BSONString(value:String)									extends BSONValue
+final case class BSONString(value:String)									extends BSONValue
 
 object BSONDocument {
 	val empty	= BSONDocument(ISeq.empty)
 }
-case class BSONDocument(value:ISeq[(String,BSONValue)])				extends BSONValue {
+final case class BSONDocument(value:ISeq[(String,BSONValue)])				extends BSONValue {
 	def get(key:String):Option[BSONValue]	= value collectFirst { case (k,v) if (k == key) => v }
 	def ++ (that:BSONDocument):BSONDocument	= BSONDocument(this.value ++ that.value)
 	def valueMap:Map[String,BSONValue]		= value.toMap
@@ -54,12 +54,12 @@ case class BSONDocument(value:ISeq[(String,BSONValue)])				extends BSONValue {
 object BSONArray {
 	val empty	= BSONVarArray()
 }
-case class BSONArray(value:ISeq[BSONValue])							extends BSONValue {
+final case class BSONArray(value:ISeq[BSONValue])							extends BSONValue {
 	def get(index:Int):Option[BSONValue]	= value lift index
 	def ++ (that:BSONArray):BSONArray		= BSONArray(this.value ++ that.value)
 }
 
-case class BSONBinary(value:Array[Byte], subtype:BSONBinaryType)	extends BSONValue {
+final case class BSONBinary(value:Array[Byte], subtype:BSONBinaryType)		extends BSONValue {
 	// Array doesn't have useful equals/hashCode implementations
 	override def equals(that:Any):Boolean	= that match {
 		case that:BSONBinary	if that canEqual this	=> (this.subtype == that.subtype) && (JArrays equals (this.value, that.value))
@@ -72,7 +72,7 @@ case class BSONBinary(value:Array[Byte], subtype:BSONBinaryType)	extends BSONVal
 // deprecated
 // case object BSONUndefined											extends BSONValue
 
-case class BSONObjectId(bytes:Array[Byte])							extends BSONValue {
+final case class BSONObjectId(bytes:Array[Byte])							extends BSONValue {
 	// Array doesn't have useful equals/hashCode implementations
 	override def equals(that:Any):Boolean	= that match {
 		case that:BSONObjectId	if that canEqual this	=> (JArrays equals (this.bytes, that.bytes))
@@ -100,28 +100,28 @@ sealed abstract class BSONBoolean extends BSONValue {
 case object BSONTrue	extends BSONBoolean
 case object BSONFalse	extends BSONBoolean
 
-case class BSONDate(value:MilliInstant)								extends BSONValue
+final case class BSONDate(value:MilliInstant)								extends BSONValue
 
-case object BSONNull 												extends BSONValue
+case object BSONNull 														extends BSONValue
 
-case class BSONRegex(pattern:String, options:Set[BSONRegexOption])	extends BSONValue
+final case class BSONRegex(pattern:String, options:Set[BSONRegexOption])	extends BSONValue
 
 // deprecated
 // case class BSONDBPointer(collection:String, objectId:BSONObjectId)	extends BSONValue
 
 // BETTER use JSExpression in here?
-case class BSONCode(code:String)									extends BSONValue
+final case class BSONCode(code:String)										extends BSONValue
 
-case class BSONSymbol(value:Symbol)									extends BSONValue
+final case class BSONSymbol(value:Symbol)									extends BSONValue
 
-case class BSONCodeInScope(code:String, scope:BSONDocument)			extends BSONValue
+final case class BSONCodeInScope(code:String, scope:BSONDocument)			extends BSONValue
 
-case class BSONInt(value:Int)										extends BSONValue
+final case class BSONInt(value:Int)											extends BSONValue
 
-case class BSONTimestamp(stamp:Int, inc:Int)						extends BSONValue
+final case class BSONTimestamp(stamp:Int, inc:Int)							extends BSONValue
 
-case class BSONLong(value:Long)										extends BSONValue
+final case class BSONLong(value:Long)										extends BSONValue
 
-case object BSONMinKey												extends BSONValue
+final case object BSONMinKey												extends BSONValue
 
-case object BSONMaxKey												extends BSONValue
+final case object BSONMaxKey												extends BSONValue

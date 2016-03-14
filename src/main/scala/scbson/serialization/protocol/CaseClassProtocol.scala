@@ -19,7 +19,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 		val ISeq(k1)	= Fielder[T]
 		Format[T](
 			(out:T)	=> {
-				val fields	= unapply(out).get
+				val fields	= unapplyTotal(unapply, out)
 				BSONDocument(ISeq(
 					k1	-> doWrite[S1](fields)
 				))
