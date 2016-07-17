@@ -3,7 +3,7 @@ package scbson
 import scbson.serialization._
 
 package object syntax {
-	// NOTE must no be passed null values
+	// NOTE must not be passed null values
 	
 	def bsonArray(values:BSONWrapper*):BSONArray	=
 			BSONArray(values.toVector map { _.unwrap })
