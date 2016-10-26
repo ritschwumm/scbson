@@ -15,8 +15,6 @@ package object syntax {
 			value.unwrap
 		
 	//------------------------------------------------------------------------------
-		
-	final case class BSONWrapper(unwrap:BSONValue)
 	
 	implicit def toBSONWrapper[T:Format](it:T):BSONWrapper	=
 			new BSONWrapper(format[T] write it)
