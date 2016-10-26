@@ -1,7 +1,7 @@
 package scbson
 
+import scutil.base.implicits._
 import scutil.lang._
-import scutil.implicits._
 
 object BSONBinaryType {
 	val prism	=

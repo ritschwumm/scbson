@@ -2,8 +2,8 @@ package scbson.serialization
 
 import scala.reflect._
 
+import scutil.base.implicits._
 import scutil.lang._
-import scutil.implicits._
 
 import scbson._
 

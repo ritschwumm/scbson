@@ -1,7 +1,7 @@
 package scbson.serialization
 
+import scutil.base.implicits._
 import scutil.lang._
-import scutil.implicits._
 
 import scbson._
 
