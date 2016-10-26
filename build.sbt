@@ -1,6 +1,6 @@
 name			:= "scbson"
 organization	:= "de.djini"
-version			:= "0.89.0"
+version			:= "0.90.0"
 
 scalaVersion	:= "2.11.8"
 scalacOptions	++= Seq(
@@ -18,11 +18,14 @@ scalacOptions	++= Seq(
 	"-Xfatal-warnings"
 )
 
-(sourceGenerators in Compile)	<+= (sourceManaged in Compile) map Boilerplate.generate
+(sourceGenerators in Compile)	+=
+		(Def.task {
+			Boilerplate generate (sourceManaged in Compile).value
+		}).taskValue
 
 conflictManager	:= ConflictManager.strict
 libraryDependencies	++= Seq(
-	"de.djini"			%%	"scutil-core"	% "0.89.0"				% "compile",
+	"de.djini"			%%	"scutil-core"	% "0.90.0"				% "compile",
 	"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile"
 )
 
