@@ -1,8 +1,8 @@
 name			:= "scbson"
 organization	:= "de.djini"
-version			:= "0.92.0"
+version			:= "0.93.0"
 
-scalaVersion	:= "2.12.0"
+scalaVersion	:= "2.12.1"
 scalacOptions	++= Seq(
 	"-deprecation",
 	"-unchecked",
@@ -26,12 +26,12 @@ scalacOptions	++= Seq(
 
 conflictManager	:= ConflictManager.strict
 libraryDependencies	++= Seq(
-	"de.djini"			%%	"scutil-core"	% "0.92.0"				% "compile",
+	"de.djini"			%%	"scutil-core"	% "0.93.0"				% "compile",
 	"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile"
 )
 
 wartremoverErrors ++= Seq(
-	Wart.Any2StringAdd,
+	Wart.StringPlusAny,
 	Wart.EitherProjectionPartial,
 	Wart.OptionPartial,
 	Wart.Enumeration,

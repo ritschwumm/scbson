@@ -29,7 +29,7 @@ object BSONValue {
 		else if (clazz == classOf[BSONLong])		18
 		else if (clazz == BSONMinKey.getClass)		255
 		else if (clazz == BSONMaxKey.getClass)		127
-		else sys error ("unexpected BSONValue: " + clazz)
+		else sys error ("unexpected BSONValue: " + clazz.toString)
 	}
 }
 sealed abstract class BSONValue {
