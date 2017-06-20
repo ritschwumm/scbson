@@ -9,7 +9,6 @@ trait FullProtocol
 		with	CollectionProtocol
 		with	OptionProtocol
 		with	EitherProtocol
-		with	TriedProtocol
 		with	SumProtocol
 		with	ObjectSumProtocol
 		with	EnumProtocol
