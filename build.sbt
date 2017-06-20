@@ -1,6 +1,6 @@
 name			:= "scbson"
 organization	:= "de.djini"
-version			:= "0.100.0"
+version			:= "0.101.0"
 
 scalaVersion	:= "2.12.1"
 scalacOptions	++= Seq(
@@ -26,7 +26,7 @@ scalacOptions	++= Seq(
 
 conflictManager	:= ConflictManager.strict
 libraryDependencies	++= Seq(
-	"de.djini"			%%	"scutil-core"	% "0.99.0"				% "compile",
+	"de.djini"			%%	"scutil-core"	% "0.100.0"				% "compile",
 	"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile"
 )
 

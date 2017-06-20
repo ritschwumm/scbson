@@ -37,10 +37,9 @@ trait CollectionProtocol {
 				},
 				(in:BSONValue)	=> {
 					documentValue(in)
-					.map {
+					.mapToMap {
 						case (k,v) => (k, doRead[T](v))
 					}
-					.toMap
 				}
 			)
 	*/
