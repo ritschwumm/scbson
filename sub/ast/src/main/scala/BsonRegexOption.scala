@@ -3,9 +3,9 @@ package scbson.ast
 import scutil.base.implicits._
 import scutil.lang._
 
-object BSONRegexOption {
+object BsonRegexOption {
 	val prism	=
-			Prism[Char,BSONRegexOption](
+			Prism[Char,BsonRegexOption](
 				_ matchOption {
 					case 'i'	=> RegexCaseInsensitive
 					case 'm'	=> RegexMultiline
@@ -30,10 +30,10 @@ object BSONRegexOption {
 //	't',	Pattern.LITERAL
 //	'd',	Pattern.UNIX_LINES
 //	'g'		GLOBAL
-sealed abstract class BSONRegexOption
-case object RegexCaseInsensitive	extends BSONRegexOption	// i	CASE_INSENSITIVE
-case object RegexMultiline			extends BSONRegexOption	// m	MULTILINE
-case object RegexDotall				extends BSONRegexOption	// s	DOTALL
-case object RegexUnicode			extends BSONRegexOption	// u	UNICODE_CASE
-case object RegexLocalized			extends BSONRegexOption	// l	LOCALIZED
-case object RegexExtended			extends BSONRegexOption	// x	COMMENTS
+sealed abstract class BsonRegexOption
+case object RegexCaseInsensitive	extends BsonRegexOption	// i	CASE_INSENSITIVE
+case object RegexMultiline			extends BsonRegexOption	// m	MULTILINE
+case object RegexDotall				extends BsonRegexOption	// s	DOTALL
+case object RegexUnicode			extends BsonRegexOption	// u	UNICODE_CASE
+case object RegexLocalized			extends BsonRegexOption	// l	LOCALIZED
+case object RegexExtended			extends BsonRegexOption	// x	COMMENTS

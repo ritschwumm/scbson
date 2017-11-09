@@ -2,9 +2,9 @@ import spray.boilerplate.BoilerplatePlugin
 
 inThisBuild(Seq(
 	organization	:= "de.djini",
-	version			:= "0.127.0",
+	version			:= "0.128.0",
 	
-	scalaVersion	:= "2.12.3",
+	scalaVersion	:= "2.12.4",
 	scalacOptions	++= Seq(
 		"-deprecation",
 		"-unchecked",
@@ -62,7 +62,7 @@ lazy val `scbson-ast`	=
 		.settings(
 			wartRemoverSetting,
 			libraryDependencies	++= Seq(
-				"de.djini"			%%	"scutil-base"	% "0.122.0"				% "compile"
+				"de.djini"			%%	"scutil-base"	% "0.123.0"				% "compile"
 			)
 		)
 		
@@ -78,7 +78,7 @@ lazy val `scbson-pickle`	=
 			wartRemoverSetting,
 			libraryDependencies	++= Seq(
 				"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile",
-				"de.djini"			%%	"scutil-base"	% "0.122.0"				% "compile"
+				"de.djini"			%%	"scutil-base"	% "0.123.0"				% "compile"
 			),
 			boilerplateSource in Compile := baseDirectory.value/ "src" / "main" / "boilerplate"
 		)

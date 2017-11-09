@@ -18,7 +18,7 @@ trait CollectionProtocol {
 	implicit def MapViaSetFormat[K:Format,V:Format](implicit ev:Format[Set[(K,V)]]):Format[Map[K,V]]	= {
 		Format[Map[K,V]](
 			(out:Map[K,V])	=> ev write out.toSet,
-			(in:BSONValue)	=> (ev read in).toMap
+			(in:BsonValue)	=> (ev read in).toMap
 		)
 	}
 	
@@ -32,11 +32,11 @@ trait CollectionProtocol {
 	implicit def StringMapFormat[T:Format]:Format[Map[String,T]]	=
 			Format[Map[String,T]](
 				(out:Map[String,T])	=> {
-					BSONDocument(out.toVector map {
+					BsonDocument(out.toVector map {
 						case (k,v) => (k, doWrite[T](v))
 					})
 				},
-				(in:BSONValue)	=> {
+				(in:BsonValue)	=> {
 					documentValue(in)
 					.mapToMap {
 						case (k,v) => (k, doRead[T](v))
@@ -49,22 +49,22 @@ trait CollectionProtocol {
 	// NOTE mongo keys should be ordered
 	implicit def MapF[T:BFormat]:BFormat[Map[String,T]]	= {
 		val sub	= bformat[T]
-		BFormatIn[Map[String,T],BSONDocument](
-				it	=> BSONDocument(it.toSeq map { case (k,v) => (k, sub write v) }),
+		BFormatIn[Map[String,T],BsonDocument](
+				it	=> BsonDocument(it.toSeq map { case (k,v) => (k, sub write v) }),
 				it	=> it.value map { case (k,v) => (k, sub read v) } toMap)
 	}
 	
 	// automatically sorts keys alphabetically
-	def sortingDocument[T](writeFunc:T=>Map[String,BSONValue], readFunc:Map[String,BSONValue]=>T):Format[T]	=
-			FormatSubtype[T,BSONDocument](
-					it	=> sortKeys(BSONDocument(writeFunc(it).toSeq)),
+	def sortingDocument[T](writeFunc:T=>Map[String,BsonValue], readFunc:Map[String,BsonValue]=>T):Format[T]	=
+			FormatSubtype[T,BsonDocument](
+					it	=> sortKeys(BsonDocument(writeFunc(it).toSeq)),
 					it	=> readFunc(it.value.toMap))
 		
-	def sortKeys(doc:BSONDocument):BSONDocument	=
-			BSONDocument(doc.value sortBy { _._1 })
+	def sortKeys(doc:BsonDocument):BsonDocument	=
+			BsonDocument(doc.value sortBy { _._1 })
 
 	// expects ordered keys
-	def orderedDocument[T](writeFunc:T=>ISeq[(String,BSONValue)], readFunc:Map[String,BSONValue]=>T):Format[T]	=
-			FormatSubtype[T,BSONDocument](it => BSONDocument(writeFunc(it)), it => readFunc(it.value.toMap))
+	def orderedDocument[T](writeFunc:T=>ISeq[(String,BsonValue)], readFunc:Map[String,BsonValue]=>T):Format[T]	=
+			FormatSubtype[T,BsonDocument](it => BsonDocument(writeFunc(it)), it => readFunc(it.value.toMap))
 	*/
 }

@@ -3,14 +3,14 @@ package scbson.ast
 import scutil.lang._
 import scutil.time.MilliInstant
 
-object BSONNavigation {
-	implicit def extendBSONNavigation(value:BSONValue):BSONNavigation			= new BSONNavigation(Some(value))
-	implicit def extendBSONNavigation(value:Option[BSONValue]):BSONNavigation	= new BSONNavigation(value)
+object BsonNavigation {
+	implicit def extendBsonNavigation(value:BsonValue):BsonNavigation			= new BsonNavigation(Some(value))
+	implicit def extendBsonNavigation(value:Option[BsonValue]):BsonNavigation	= new BsonNavigation(value)
 }
 
-final class BSONNavigation(peer:Option[BSONValue]) {
-	def /(key:String):Option[BSONValue]	= toMap		flatMap { _ get		key		}
-	def /(index:Int):Option[BSONValue]	= arraySeq	flatMap { _ lift	index	}
+final class BsonNavigation(peer:Option[BsonValue]) {
+	def /(key:String):Option[BsonValue]	= toMap		flatMap { _ get		key		}
+	def /(index:Int):Option[BsonValue]	= arraySeq	flatMap { _ lift	index	}
 	
 	//------------------------------------------------------------------------------
 
@@ -28,15 +28,15 @@ final class BSONNavigation(peer:Option[BSONValue]) {
 	def date:Option[MilliInstant]						= peer	flatMap { _.asDate			}
 	
 	def code:Option[String]								= peer	flatMap { _.asCode			}
-	def codeInScope:Option[(String,BSONDocument)]		= peer	flatMap { _.asCodeInScope	}
+	def codeInScope:Option[(String,BsonDocument)]		= peer	flatMap { _.asCodeInScope	}
 	def timestamp:Option[(Int,Int)]						= peer	flatMap { _.asTimestamp		}
-	def binary:Option[(Array[Byte],BSONBinaryType)]		= peer	flatMap { _.asBinary		}
-	def regex:Option[(String,Set[BSONRegexOption])]		= peer	flatMap { _.asRegex			}
+	def binary:Option[(Array[Byte],BsonBinaryType)]		= peer	flatMap { _.asBinary		}
+	def regex:Option[(String,Set[BsonRegexOption])]		= peer	flatMap { _.asRegex			}
 	
-	def arraySeq:Option[ISeq[BSONValue]]				= peer	flatMap { _.asArray			}
-	def documentSeq:Option[ISeq[(String,BSONValue)]]	= peer	flatMap { _.asDocument		}
+	def arraySeq:Option[ISeq[BsonValue]]				= peer	flatMap { _.asArray			}
+	def documentSeq:Option[ISeq[(String,BsonValue)]]	= peer	flatMap { _.asDocument		}
 	
 	//------------------------------------------------------------------------------
 
-	def toMap:Option[Map[String,BSONValue]]	= documentSeq map { _.toMap		}
+	def toMap:Option[Map[String,BsonValue]]	= documentSeq map { _.toMap		}
 }

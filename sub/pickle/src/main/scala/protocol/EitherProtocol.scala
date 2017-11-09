@@ -2,7 +2,7 @@ package scbson.pickle.protocol
 
 import scbson.ast._
 import scbson.pickle._
-import scbson.pickle.BSONPickleUtil._
+import scbson.pickle.BsonPickleUtil._
 
 object EitherProtocol extends EitherProtocol
 
@@ -14,14 +14,14 @@ trait EitherProtocol {
 	implicit def EitherFormat[L:Format,R:Format]:Format[Either[L,R]]	=
 			Format[Either[L,R]](
 				_ match {
-					case Right(value)	=>  BSONDocument.Var(
+					case Right(value)	=>  BsonDocument.Var(
 						rightTag	-> doWrite[R](value)
 					)
-					case Left(value)	=>  BSONDocument.Var(
+					case Left(value)	=>  BsonDocument.Var(
 						leftTag		-> doWrite[L](value)
 					)
 				},
-				(in:BSONValue)	=> {
+				(in:BsonValue)	=> {
 					val map	= documentMap(in)
 					(map get leftTag, map get rightTag) match {
 						case (None, Some(js))	=> Right(doReadUnsafe[R](js))

@@ -6,17 +6,17 @@ import scbson.pickle._
 package object syntax {
 	// NOTE must not be passed null values
 	
-	def bsonArray(values:BSONWrapper*):BSONArray	=
-			BSONArray(values.toVector map { _.unwrap })
+	def bsonArray(values:BsonWrapper*):BsonArray	=
+			BsonArray(values.toVector map { _.unwrap })
 		
-	def bsonDocument(values:(String,BSONWrapper)*):BSONDocument	=
-			BSONDocument(values.toVector map { case (k, v) => (k, v.unwrap) })
+	def bsonDocument(values:(String,BsonWrapper)*):BsonDocument	=
+			BsonDocument(values.toVector map { case (k, v) => (k, v.unwrap) })
 		
-	def bsonSimple(value:BSONWrapper):BSONValue	=
+	def bsonSimple(value:BsonWrapper):BsonValue	=
 			value.unwrap
 		
 	//------------------------------------------------------------------------------
 	
-	implicit def toBSONWrapper[T:Format](it:T):BSONWrapper	=
-			new BSONWrapper(format[T] write it)
+	implicit def toBsonWrapper[T:Format](it:T):BsonWrapper	=
+			new BsonWrapper(format[T] write it)
 }

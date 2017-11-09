@@ -2,7 +2,7 @@ package scbson.pickle.protocol
 
 import scbson.ast._
 import scbson.pickle._
-import scbson.pickle.BSONPickleUtil._
+import scbson.pickle.BsonPickleUtil._
 
 object OptionProtocol extends OptionProtocol
 
@@ -14,10 +14,10 @@ trait OptionProtocol {
 	implicit def OptionFormat[T:Format]:Format[Option[T]]	=
 			Format[Option[T]](
 				_ match {
-					case Some(value)	=> BSONDocument.Var(someTag -> doWrite(value))
-					case None			=> BSONDocument.Var(noneTag -> BSONBoolean(true))
+					case Some(value)	=> BsonDocument.Var(someTag -> doWrite(value))
+					case None			=> BsonDocument.Var(noneTag -> BsonBoolean(true))
 				},
-				(in:BSONValue)	=> {
+				(in:BsonValue)	=> {
 					val map	= documentMap(in)
 					(map get someTag, map get noneTag) match {
 						case (Some(js), None)	=> Some(doReadUnsafe[T](js))

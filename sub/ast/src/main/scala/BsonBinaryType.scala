@@ -3,9 +3,9 @@ package scbson.ast
 import scutil.base.implicits._
 import scutil.lang._
 
-object BSONBinaryType {
+object BsonBinaryType {
 	val prism	=
-			Prism[Byte,BSONBinaryType](
+			Prism[Byte,BsonBinaryType](
 				_ matchOption {
 					case 0x00	=> BinaryGeneric
 					case 0x01	=> BinaryFunction
@@ -25,10 +25,10 @@ object BSONBinaryType {
 			)
 }
 
-sealed abstract class BSONBinaryType
-case object BinaryGeneric	extends BSONBinaryType
-case object BinaryFunction	extends BSONBinaryType
-case object BinaryOld		extends BSONBinaryType
-case object BinaryUUID		extends BSONBinaryType
-case object BinaryMD5		extends BSONBinaryType
-case object BinaryCustom	extends BSONBinaryType
+sealed abstract class BsonBinaryType
+case object BinaryGeneric	extends BsonBinaryType
+case object BinaryFunction	extends BsonBinaryType
+case object BinaryOld		extends BsonBinaryType
+case object BinaryUUID		extends BsonBinaryType
+case object BinaryMD5		extends BsonBinaryType
+case object BinaryCustom	extends BsonBinaryType

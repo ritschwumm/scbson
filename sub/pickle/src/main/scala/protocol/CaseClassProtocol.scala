@@ -7,24 +7,24 @@ import scutil.lang._
 
 import scbson.ast._
 import scbson.pickle._
-import scbson.pickle.BSONPickleUtil._
+import scbson.pickle.BsonPickleUtil._
 
 object CaseClassProtocol extends CaseClassProtocol
 
 trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	def caseObjectFormat[T:TypeTag](singleton:T):Format[T]	=
-			Format[T](constant(BSONDocument.empty), constant(singleton))
+			Format[T](constant(BsonDocument.empty), constant(singleton))
 	
 	def caseClassFormat1[S1:Format,T:Fielding](apply:S1=>T, unapply:T=>Option[S1]):Format[T]	= {
 		val ISeq(k1)	= Fielder[T]
 		Format[T](
 			(out:T)	=> {
 				val fields	= unapplyTotal(unapply, out)
-				BSONDocument(ISeq(
+				BsonDocument(ISeq(
 					k1	-> doWrite[S1](fields)
 				))
 			},
-			(in:BSONValue)	=> {
+			(in:BsonValue)	=> {
 				val map	= documentMap(in)
 				apply(
 					doReadUnsafe[S1](map(k1))
@@ -40,14 +40,14 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	):Format[T]	= {
 		val ISeq(k1,k2)	= Fielder[T]
 		new Format[T] {
-			def write(out:T):BSONValue	= {
+			def write(out:T):BsonValue	= {
 				val fields	= unapply(out).get
-				BSONDocument.Var(
+				BsonDocument.Var(
 					k1	-> doWrite[S1](fields._1),
 					k2	-> doWrite[S2](fields._2)
 				)
 			}
-			def read(in:BSONValue):T	= {
+			def read(in:BsonValue):T	= {
 				val map	= documentMap(in)
 				apply(
 					doRead[S1](map(k1)),
@@ -68,14 +68,14 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	private class InlinePartialFormat[T,C<:T](summand:Summand[T,C]) {
 		import summand._
 		
-		def write(value:T):Option[BSONValue]	=
+		def write(value:T):Option[BsonValue]	=
 				castValue(value) map { it =>
-					BSONDocument.Var(typeTag -> BSONString(identifier)) ++
-					downcast[BSONDocument](format write it)
+					BsonDocument.Var(typeTag -> BsonString(identifier)) ++
+					downcast[BsonDocument](format write it)
 				}
-		def read(bson:BSONValue):Option[T]	=
+		def read(bson:BsonValue):Option[T]	=
 				documentValue(bson)
-				.exists	{ _ == ((typeTag, BSONString(identifier))) }
+				.exists	{ _ == ((typeTag, BsonString(identifier))) }
 				.option	{ format read bson }
 				
 		def pf:PartialFormat[T]	= PBijection(write, read)

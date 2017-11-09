@@ -5,7 +5,7 @@ import scutil.lang.Fielding
 import scutil.lang.ISeq
 import scbson.ast._
 import scbson.pickle._
-import BSONPickleUtil._
+import BsonPickleUtil._
 
 trait CaseClassProtocolGenerated {
 	[2..#implicit def caseClassFormat1[[#S1:Format#],T:Fielding](apply:([#S1#])=>T, unapply:T=>Option[([#S1#])]):Format[T]	= {
@@ -13,11 +13,11 @@ trait CaseClassProtocolGenerated {
 		Format[T](
 			(out:T)	=> {
 				val fields	= unapplyTotal(unapply, out)
-				BSONDocument.Var(
+				BsonDocument.Var(
 					[#k1 -> doWrite[S1](fields._1)#]
 				)
 			},
-			(in:BSONValue)	=> {
+			(in:BsonValue)	=> {
 				val map	= documentMap(in)
 				apply([#doReadUnsafe[S1](map(k1))#])
 			}

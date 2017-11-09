@@ -4,33 +4,33 @@ import scutil.lang._
 
 import scbson.ast._
 
-object BSONPickleUtil {
+object BsonPickleUtil {
 	def fail(message:String):Nothing =
-			throw new BSONUnpickleException(BSONUnpickleFailure(message))
+			throw new BsonUnpickleException(BsonUnpickleFailure(message))
 	
 	// TODO add expected and actual ctor name
-	def downcast[T<:BSONValue](it:BSONValue):T	=
+	def downcast[T<:BsonValue](it:BsonValue):T	=
 			try { it.asInstanceOf[T] }
 			catch { case e:ClassCastException => fail("unexpected bson value type") }
 			
 	//------------------------------------------------------------------------------
 	
-	def documentMap(it:BSONValue):Map[String,BSONValue]	=
+	def documentMap(it:BsonValue):Map[String,BsonValue]	=
 			it match {
-				case BSONDocument(value)	=> value.toMap
-				case _						=> fail("expected a BSONDocument")
+				case BsonDocument(value)	=> value.toMap
+				case _						=> fail("expected a BsonDocument")
 			}
 	
-	def documentValue(it:BSONValue):ISeq[(String,BSONValue)]	=
+	def documentValue(it:BsonValue):ISeq[(String,BsonValue)]	=
 			it match {
-				case BSONDocument(value)	=> value
-				case _						=> fail("expected a BSONDocument")
+				case BsonDocument(value)	=> value
+				case _						=> fail("expected a BsonDocument")
 			}
 			
-	def arrayValue(it:BSONValue):ISeq[BSONValue]	=
+	def arrayValue(it:BsonValue):ISeq[BsonValue]	=
 			it match {
-				case BSONArray(value)	=> value
-				case _					=> fail("expected a BSONArray")
+				case BsonArray(value)	=> value
+				case _					=> fail("expected a BsonArray")
 			}
 			
 	//------------------------------------------------------------------------------

@@ -7,17 +7,17 @@ import scutil.lang._
 
 import scbson.ast._
 import scbson.pickle._
-import scbson.pickle.BSONPickleUtil._
+import scbson.pickle.BsonPickleUtil._
 
 object SumProtocol extends SumProtocol
 
 trait SumProtocol {
-	type PartialFormat[T]	= PBijection[T,BSONValue]
+	type PartialFormat[T]	= PBijection[T,BsonValue]
 
 	def sumFormat[T](partials:ISeq[PartialFormat[T]]):Format[T]	=
 			Format[T](
 				(it:T)			=> partials collapseMapFirst { _ write it } getOrElse fail("no matching constructor found"),
-				(it:BSONValue)	=> partials collapseMapFirst { _ read  it } getOrElse fail("no matching constructor found")
+				(it:BsonValue)	=> partials collapseMapFirst { _ read  it } getOrElse fail("no matching constructor found")
 			)
 			
 	//------------------------------------------------------------------------------
