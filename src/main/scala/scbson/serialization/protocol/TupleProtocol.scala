@@ -6,7 +6,7 @@ trait TupleProtocol extends TupleProtocolGenerated {
 	/*
 	implicit def Tuple2Format[T1:Format,T2:Format]:Format[(T1,T2)]	= new Format[(T1,T2)] {
 		def write(out:(T1,T2)):BSONValue	= {
-			BSONVarArray(
+			BSONArray.Var(
 				doWrite[T1](out._1),
 				doWrite[T2](out._2)
 			)

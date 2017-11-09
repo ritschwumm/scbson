@@ -42,7 +42,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 		new Format[T] {
 			def write(out:T):BSONValue	= {
 				val fields	= unapply(out).get
-				BSONVarDocument(
+				BSONDocument.Var(
 					k1	-> doWrite[S1](fields._1),
 					k2	-> doWrite[S2](fields._2)
 				)
@@ -70,7 +70,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 		
 		def write(value:T):Option[BSONValue]	=
 				castValue(value) map { it =>
-					BSONVarDocument(typeTag -> BSONString(identifier)) ++
+					BSONDocument.Var(typeTag -> BSONString(identifier)) ++
 					downcast[BSONDocument](format write it)
 				}
 		def read(bson:BSONValue):Option[T]	=

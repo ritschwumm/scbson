@@ -14,8 +14,8 @@ trait OptionProtocol {
 	implicit def OptionFormat[T:Format]:Format[Option[T]]	=
 			Format[Option[T]](
 				_ match {
-					case Some(value)	=> BSONVarDocument(someTag -> doWrite(value))
-					case None			=> BSONVarDocument(noneTag -> BSONBoolean(true))
+					case Some(value)	=> BSONDocument.Var(someTag -> doWrite(value))
+					case None			=> BSONDocument.Var(noneTag -> BSONBoolean(true))
 				},
 				(in:BSONValue)	=> {
 					val map	= documentMap(in)

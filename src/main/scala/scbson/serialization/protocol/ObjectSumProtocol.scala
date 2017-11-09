@@ -16,11 +16,11 @@ trait ObjectSumProtocol extends SumProtocol {
 		import summand._
 		def write(value:T):Option[BSONValue]	=
 				castValue(value) map { it =>
-					BSONVarDocument(identifier	-> (format write it))
+					BSONDocument.Var(identifier	-> (format write it))
 				}
 		def read(bson:BSONValue):Option[T]	=
 				bson matchOption {
-					case BSONVarDocument((`identifier`, data))	=> format read data
+					case BSONDocument.Var((`identifier`, data))	=> format read data
 				}
 				
 		def pf:PartialFormat[T]	= PBijection(write, read)

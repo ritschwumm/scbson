@@ -14,10 +14,10 @@ trait EitherProtocol {
 	implicit def EitherFormat[L:Format,R:Format]:Format[Either[L,R]]	=
 			Format[Either[L,R]](
 				_ match {
-					case Right(value)	=>  BSONVarDocument(
+					case Right(value)	=>  BSONDocument.Var(
 						rightTag	-> doWrite[R](value)
 					)
-					case Left(value)	=>  BSONVarDocument(
+					case Left(value)	=>  BSONDocument.Var(
 						leftTag		-> doWrite[L](value)
 					)
 				},

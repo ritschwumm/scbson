@@ -43,7 +43,12 @@ final case class BSONDouble(value:Double)									extends BSONValue
 final case class BSONString(value:String)									extends BSONValue
 
 object BSONDocument {
-	val empty	= BSONDocument(ISeq.empty)
+	val empty	= BSONDocument(Vector.empty)
+	
+	object Var {
+		def apply(it:(String,BSONValue)*):BSONDocument						= BSONDocument(it.toVector)
+		def unapplySeq(it:BSONDocument):Option[ISeq[(String,BSONValue)]]	= Some(it.value)
+	}
 }
 final case class BSONDocument(value:ISeq[(String,BSONValue)])				extends BSONValue {
 	def get(key:String):Option[BSONValue]	= value collectFirst { case (k,v) if (k == key) => v }
@@ -52,7 +57,12 @@ final case class BSONDocument(value:ISeq[(String,BSONValue)])				extends BSONVal
 }
 
 object BSONArray {
-	val empty	= BSONVarArray()
+	val empty	= BSONArray(Vector.empty)
+	
+	object Var {
+		def apply(it:BSONValue*):BSONArray						= BSONArray(it.toVector)
+		def unapplySeq(it:BSONArray):Option[ISeq[BSONValue]]	= Some(it.value)
+	}
 }
 final case class BSONArray(value:ISeq[BSONValue])							extends BSONValue {
 	def get(index:Int):Option[BSONValue]	= value lift index

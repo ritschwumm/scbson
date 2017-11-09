@@ -1,6 +1,8 @@
+import spray.boilerplate.BoilerplatePlugin
+
 name			:= "scbson"
 organization	:= "de.djini"
-version			:= "0.124.0"
+version			:= "0.125.0"
 
 scalaVersion	:= "2.12.3"
 scalacOptions	++= Seq(
@@ -18,10 +20,8 @@ scalacOptions	++= Seq(
 	"-Xlint"
 )
 
-(sourceGenerators in Compile)	+=
-		(Def.task {
-			Boilerplate generate (sourceManaged in Compile).value
-		}).taskValue
+enablePlugins(BoilerplatePlugin)
+boilerplateSource in Compile := baseDirectory.value/ "src" / "main" / "boilerplate"
 
 conflictManager	:= ConflictManager.strict
 libraryDependencies	++= Seq(

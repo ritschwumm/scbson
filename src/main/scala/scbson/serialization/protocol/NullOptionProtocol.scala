@@ -29,8 +29,8 @@ trait NullOptionProtocol extends LowPrioNullOptionProtocol {
 	implicit def OptionOptionFormat[T](implicit ev:Format[Option[T]]):Format[Option[Option[T]]]	=
 			Format[Option[Option[T]]](
 				_ match {
-					case Some(value)	=> BSONVarDocument(someTag -> doWrite(value))
-					case None			=> BSONVarDocument(noneTag -> BSONTrue)
+					case Some(value)	=> BSONDocument.Var(someTag -> doWrite(value))
+					case None			=> BSONDocument.Var(noneTag -> BSONTrue)
 				},
 				(in:BSONValue)	=> {
 					val map	= documentMap(in)
