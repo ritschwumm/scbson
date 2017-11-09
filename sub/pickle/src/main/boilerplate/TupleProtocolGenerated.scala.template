@@ -1,0 +1,20 @@
+package scbson.pickle.protocol
+
+import scbson.ast._
+import scbson.pickle._
+import BSONPickleUtil._
+
+trait TupleProtocolGenerated {
+	[2..#implicit def Tuple1Format[[#T1:Format#]]:Format[([#T1#])]	=
+			Format[([#T1#])](
+				(out:([#T1#])) => {
+					BSONArray.Var([#doWrite[T1](out._1)#])
+				},
+				(in:BSONValue) => {
+					val	arr	= arrayValue(in)
+					([#doReadUnsafe[T1](arr(0))#])
+				}
+			)
+	#
+	]
+}
