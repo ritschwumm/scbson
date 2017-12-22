@@ -92,6 +92,9 @@ sealed abstract class BsonValue {
 
 final case class BsonDouble(value:Double)									extends BsonValue
 
+object BsonString {
+	val empty	= BsonString("")
+}
 final case class BsonString(value:String)									extends BsonValue
 
 object BsonDocument {

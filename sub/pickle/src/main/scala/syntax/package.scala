@@ -18,5 +18,5 @@ package object syntax {
 	//------------------------------------------------------------------------------
 	
 	implicit def toBsonWrapper[T:Format](it:T):BsonWrapper	=
-			new BsonWrapper(format[T] write it)
+			new BsonWrapper(format[T] get it)
 }

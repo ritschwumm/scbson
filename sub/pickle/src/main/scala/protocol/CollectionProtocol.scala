@@ -17,15 +17,15 @@ trait CollectionProtocol {
 	// TODO careful, should sort it's keys maybe
 	implicit def MapViaSetFormat[K:Format,V:Format](implicit ev:Format[Set[(K,V)]]):Format[Map[K,V]]	= {
 		Format[Map[K,V]](
-			(out:Map[K,V])	=> ev write out.toSet,
-			(in:BsonValue)	=> (ev read in).toMap
+			(out:Map[K,V])	=> ev get out.toSet,
+			(in:BsonValue)	=> (ev put in).toMap
 		)
 	}
 	
 	/*
 	def mapFormat[S,T:Format](conv:Bijection[S,String]):Format[Map[S,T]]	=
 			StringMapFormat[T] compose Bijection[Map[S,T],Map[String,T]](
-				_ map { case (k,v) => (conv write k, v) },
+				_ map { case (k,v) => (conv get k, v) },
 				_ map { case (k,v) => (conv read  k, v) }
 			)
 			
@@ -50,7 +50,7 @@ trait CollectionProtocol {
 	implicit def MapF[T:BFormat]:BFormat[Map[String,T]]	= {
 		val sub	= bformat[T]
 		BFormatIn[Map[String,T],BsonDocument](
-				it	=> BsonDocument(it.toSeq map { case (k,v) => (k, sub write v) }),
+				it	=> BsonDocument(it.toSeq map { case (k,v) => (k, sub get v) }),
 				it	=> it.value map { case (k,v) => (k, sub read v) } toMap)
 	}
 	
