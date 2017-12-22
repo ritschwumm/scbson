@@ -18,7 +18,7 @@ trait CollectionProtocol {
 	implicit def MapViaSetFormat[K:Format,V:Format](implicit ev:Format[Set[(K,V)]]):Format[Map[K,V]]	= {
 		Format[Map[K,V]](
 			(out:Map[K,V])	=> ev get out.toSet,
-			(in:BsonValue)	=> (ev put in).toMap
+			(in:BsonValue)	=> (ev set in).toMap
 		)
 	}
 	
