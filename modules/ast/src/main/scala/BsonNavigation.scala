@@ -24,13 +24,13 @@ final class BsonNavigation(peer:Option[BsonValue]) {
 	def double:Option[Double]							= peer	flatMap { _.asDouble		}
 	def string:Option[String]							= peer	flatMap { _.asString		}
 	def symbol:Option[Symbol]							= peer	flatMap { _.asSymbol		}
-	def objectId:Option[Array[Byte]]					= peer	flatMap { _.asObjectId		}
+	def objectId:Option[ByteString]						= peer	flatMap { _.asObjectId		}
 	def date:Option[MilliInstant]						= peer	flatMap { _.asDate			}
 	
 	def code:Option[String]								= peer	flatMap { _.asCode			}
 	def codeInScope:Option[(String,BsonDocument)]		= peer	flatMap { _.asCodeInScope	}
 	def timestamp:Option[(Int,Int)]						= peer	flatMap { _.asTimestamp		}
-	def binary:Option[(Array[Byte],BsonBinaryType)]		= peer	flatMap { _.asBinary		}
+	def binary:Option[(ByteString,BsonBinaryType)]		= peer	flatMap { _.asBinary		}
 	def regex:Option[(String,Set[BsonRegexOption])]		= peer	flatMap { _.asRegex			}
 	
 	def arraySeq:Option[ISeq[BsonValue]]				= peer	flatMap { _.asArray			}

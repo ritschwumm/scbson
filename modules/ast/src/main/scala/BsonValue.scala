@@ -1,6 +1,6 @@
 package scbson.ast
 
-import java.util.{ Arrays => JArrays }
+import scala.reflect.ClassTag
 
 import scutil.base.implicits._
 import scutil.lang._
@@ -20,13 +20,14 @@ object BsonValue {
 	def mkDouble(it:Double):BsonValue									= BsonDouble(it)
 	def mkString(it:String):BsonValue									= BsonString(it)
 	def mkSymbol(it:Symbol):BsonValue									= BsonSymbol(it)
-	def mkObjectId(it:Array[Byte]):BsonValue							= BsonObjectId(it)
+	def mkObjectId(it:ByteString):BsonValue								= BsonObjectId(it)
 	def mkDate(it:MilliInstant):BsonValue								= BsonDate(it)
 	
+	// NOTE stamp and inc are unsigned
 	def mkTimestamp(stamp:Int, inc:Int):BsonValue						= BsonTimestamp(stamp, inc)
 	def mkCode(code:String):BsonValue									= BsonCode(code)
 	def mkCodeInScope(code:String, scope:BsonDocument):BsonValue		= BsonCodeInScope(code, scope)
-	def mkBinary(value:Array[Byte], subtype:BsonBinaryType):BsonValue	= BsonBinary(value, subtype)
+	def mkBinary(value:ByteString, subtype:BsonBinaryType):BsonValue	= BsonBinary(value, subtype)
 	def mkRegex(pattern:String, options:Set[BsonRegexOption]):BsonValue	= BsonRegex(pattern, options)
 	
 	def mkArray(it:ISeq[BsonValue]):BsonValue							= BsonArray(it)
@@ -34,22 +35,24 @@ object BsonValue {
 
 	//------------------------------------------------------------------------------
 	
-	def typeId[T<:BsonValue:Manifest]:Int	= {
-		val clazz	= implicitly[Manifest[T]].getClass
+	def typeId[T<:BsonValue](implicit CT:ClassTag[T]):Int	= {
+		val clazz	= CT.runtimeClass
 			 if (clazz == classOf[BsonDouble])		1
 		else if (clazz == classOf[BsonString])		2
 		else if (clazz == classOf[BsonDocument])	3
-		
 		else if (clazz == classOf[BsonArray])		4
 		else if (clazz == classOf[BsonBinary])		5
+		// deprecated
 		// else if (clazz == classOf[BsonUndefined])	6
 		else if (clazz == classOf[BsonObjectId])	7
 		else if (clazz == classOf[BsonBoolean])		8
 		else if (clazz == classOf[BsonDate])		9
 		else if (clazz == BsonNull.getClass)		10
 		else if (clazz == classOf[BsonRegex])		11
+		// deprecated
 		// else if (clazz == classOf[BsonDBPointer])	12
 		else if (clazz == classOf[BsonCode])		13
+		// NOTE this is not deprecated, too
 		else if (clazz == classOf[BsonSymbol])		14
 		else if (clazz == classOf[BsonCodeInScope])	15
 		else if (clazz == classOf[BsonInt])			16
@@ -71,13 +74,13 @@ sealed abstract class BsonValue {
 	def asDouble:Option[Double]							= this matchOption { case BsonDouble(x)					=> x	}
 	def asString:Option[String]							= this matchOption { case BsonString(x)					=> x	}
 	def asSymbol:Option[Symbol]							= this matchOption { case BsonSymbol(x)					=> x	}
-	def asObjectId:Option[Array[Byte]]					= this matchOption { case BsonObjectId(x)				=> x	}
+	def asObjectId:Option[ByteString]					= this matchOption { case BsonObjectId(x)				=> x	}
 	def asDate:Option[MilliInstant]						= this matchOption { case BsonDate(x)					=> x	}
 	
 	def asCode:Option[String]							= this matchOption { case BsonCode(code)				=> code 				}
 	def asCodeInScope:Option[(String,BsonDocument)]		= this matchOption { case BsonCodeInScope(code, scope)	=> (code, scope) 		}
 	def asTimestamp:Option[(Int,Int)]					= this matchOption { case BsonTimestamp(stamp, inc)		=> (stamp, inc) 		}
-	def asBinary:Option[(Array[Byte], BsonBinaryType)]	= this matchOption { case BsonBinary(value, subtype)	=> (value, subtype)		}
+	def asBinary:Option[(ByteString, BsonBinaryType)]	= this matchOption { case BsonBinary(value, subtype)	=> (value, subtype)		}
 	def asRegex:Option[(String, Set[BsonRegexOption])]	= this matchOption { case BsonRegex(pattern, options)	=> (pattern, options)	}
 	
 	def asArray:Option[ISeq[BsonValue]]					= this matchOption { case BsonArray(x)					=> x	}
@@ -124,33 +127,16 @@ final case class BsonArray(value:ISeq[BsonValue])							extends BsonValue {
 	def ++ (that:BsonArray):BsonArray		= BsonArray(this.value ++ that.value)
 }
 
-final case class BsonBinary(value:Array[Byte], subtype:BsonBinaryType)		extends BsonValue {
-	// Array doesn't have useful equals/hashCode implementations
-	override def equals(that:Any):Boolean	= that match {
-		case that:BsonBinary	if that canEqual this	=> (this.subtype == that.subtype) && (JArrays equals (this.value, that.value))
-		case _											=> false
-	}
-	def canEqual(that:Any):Boolean	= that.isInstanceOf[BsonBinary]
-	override def hashCode():Int		= subtype.hashCode + (JArrays hashCode value)
-}
+final case class BsonBinary(value:ByteString, subtype:BsonBinaryType)		extends BsonValue
 
 // deprecated
 // case object BsonUndefined											extends BsonValue
 
-final case class BsonObjectId(bytes:Array[Byte])							extends BsonValue {
-	// Array doesn't have useful equals/hashCode implementations
-	override def equals(that:Any):Boolean	= that match {
-		case that:BsonObjectId	if that canEqual this	=> (JArrays equals (this.bytes, that.bytes))
-		case _											=> false
-	}
-	def canEqual(that:Any):Boolean	= that.isInstanceOf[BsonObjectId]
-	override def hashCode():Int		= (JArrays hashCode bytes)
-}
-/*
-case class BsonObjectId(seconds:Int, machine:Tri, pid:Short, inc:Tri)	extends BsonValue
-// 3 bytes, the highest one must always be 0
-case class Tri(value:Int)
-*/
+// 4 byte seconds sice the unix epoch
+// 3 byte machine id
+// 2 byte process id
+// 3 byte counter
+final case class BsonObjectId(bytes:ByteString) extends BsonValue
 
 object BsonBoolean {
 	def apply(value:Boolean):BsonBoolean			= if (value) BsonTrue else BsonFalse
@@ -177,14 +163,17 @@ final case class BsonRegex(pattern:String, options:Set[BsonRegexOption])	extends
 // BETTER use JSExpression in here?
 final case class BsonCode(code:String)										extends BsonValue
 
+// deprecated
 final case class BsonSymbol(value:Symbol)									extends BsonValue
 
 final case class BsonCodeInScope(code:String, scope:BsonDocument)			extends BsonValue
 
 final case class BsonInt(value:Int)											extends BsonValue
 
+// NOTE this is for internal use in mongodb - e.g. before mongodb 2.6 this was not even replaced in all fields
 final case class BsonTimestamp(stamp:Int, inc:Int)							extends BsonValue
 
+// since 2.6 (??)
 final case class BsonLong(value:Long)										extends BsonValue
 
 final case object BsonMinKey												extends BsonValue
