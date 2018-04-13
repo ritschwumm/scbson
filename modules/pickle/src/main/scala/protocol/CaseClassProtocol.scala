@@ -15,6 +15,17 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated with SumProtocol {
 	def caseObjectFormat[T:TypeTag](singleton:T):Format[T]	=
 			Format[T](constant(BsonDocument.empty), constant(singleton))
 	
+	def caseClassFormat0[T](apply:()=>T, unapply:T=>Boolean):Format[T]	=
+		Format[T](
+			(out:T)	=> {
+				BsonDocument(ISeq.empty)
+			},
+			(in:BsonValue)	=> {
+				val _	= documentMap(in)
+				apply()
+			}
+		)
+		
 	def caseClassFormat1[S1:Format,T](apply:S1=>T, unapply:T=>Option[S1])(implicit FN:FieldNames[T]):Format[T]	= {
 		val Vector(k1)	= FN.names
 		Format[T](
