@@ -1,18 +1,16 @@
 package scbson.pickle.protocol
 
-@deprecated("0.147.0", "use StandardProtocol")
-object FullProtocol extends FullProtocol
+object StandardProtocol2 extends StandardProtocol2
 
-@deprecated("0.147.0", "use StandardProtocol")
-trait FullProtocol
+trait StandardProtocol2
 		extends	NativeProtocol
 		with	ViaProtocol
 		with	ISeqProtocol
 		with	CollectionProtocol
 		with	OptionProtocol
 		with	EitherProtocol
-		with	SumProtocol
-		with	ObjectSumProtocol
+		//with	SumProtocol
+		//with	ObjectSumProtocol
 		with	EnumProtocol
 		with	TupleProtocol
 		with	CaseClassProtocol
