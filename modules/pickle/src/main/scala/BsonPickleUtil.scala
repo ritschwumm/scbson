@@ -35,6 +35,14 @@ object BsonPickleUtil {
 			
 	//------------------------------------------------------------------------------
 	
+	def requireField(map:Map[String,BsonValue], key:String):BsonValue	=
+			map get key match {
+				case Some(x)	=> x
+				case None		=> fail("expected a field " + key)
+			}
+			
+	//------------------------------------------------------------------------------
+	
 	def unapplyTotal[S,T](unapply:S=>Option[T], value:S):T	=
 			unapply(value) match {
 				case Some(x)	=> x
