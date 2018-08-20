@@ -2,7 +2,7 @@ import spray.boilerplate.BoilerplatePlugin
 
 inThisBuild(Seq(
 	organization	:= "de.djini",
-	version			:= "0.152.0",
+	version			:= "0.153.0",
 	
 	scalaVersion	:= "2.12.6",
 	scalacOptions	++= Seq(
@@ -20,30 +20,29 @@ inThisBuild(Seq(
 		"-Xlint"
 	),
 	conflictManager	:= ConflictManager.strict,
-	resolvers		+= "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
+	resolvers		+= "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
+	
+	wartremoverErrors	++= Seq(
+		Wart.StringPlusAny,
+		Wart.EitherProjectionPartial,
+		Wart.OptionPartial,
+		Wart.Enumeration,
+		Wart.FinalCaseClass,
+		Wart.JavaConversions,
+		Wart.Option2Iterable,
+		Wart.TryPartial,
+		Wart.JavaSerializable,
+		//Wart.Any,
+		Wart.AnyVal,
+		//Wart.Nothing,
+		Wart.ArrayEquals,
+		Wart.ExplicitImplicitTypes,
+		Wart.LeakingSealed
+		//Wart.Overloading
+		//Wart.PublicInference,
+		//Wart.TraversableOps
+	)
 ))
-
-lazy val wartRemoverSetting	=
-		wartremoverErrors	++= Seq(
-			Wart.StringPlusAny,
-			Wart.EitherProjectionPartial,
-			Wart.OptionPartial,
-			Wart.Enumeration,
-			Wart.FinalCaseClass,
-			Wart.JavaConversions,
-			Wart.Option2Iterable,
-			Wart.TryPartial,
-			Wart.JavaSerializable,
-			//Wart.Any,
-			Wart.AnyVal,
-			//Wart.Nothing,
-			Wart.ArrayEquals,
-			Wart.ExplicitImplicitTypes,
-			Wart.LeakingSealed
-			//Wart.Overloading
-			//Wart.PublicInference,
-			//Wart.TraversableOps
-		)
 		
 lazy val `scbson` =
 		(project in file("."))
@@ -60,9 +59,8 @@ lazy val `scbson` =
 lazy val `scbson-ast`	=
 		(project	in	file("modules/ast"))
 		.settings(
-			wartRemoverSetting,
 			libraryDependencies	++= Seq(
-				"de.djini"			%%	"scutil-base"	% "0.144.0"				% "compile"
+				"de.djini"			%%	"scutil-base"	% "0.145.0"				% "compile"
 			)
 		)
 		
@@ -75,10 +73,9 @@ lazy val `scbson-pickle`	=
 			`scbson-ast`
 		)
 		.settings(
-			wartRemoverSetting,
 			libraryDependencies	++= Seq(
 				"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile",
-				"de.djini"			%%	"scutil-base"	% "0.144.0"				% "compile"
+				"de.djini"			%%	"scutil-base"	% "0.145.0"				% "compile"
 			),
 			boilerplateSource in Compile := baseDirectory.value/ "src" / "main" / "boilerplate"
 		)
