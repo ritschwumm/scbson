@@ -14,7 +14,7 @@ trait ISeqProtocol {
 				(out:ISeq[T])	=> BsonArray(out map doWrite[T]),
 				(in:BsonValue)	=> arrayValue(in) map doReadUnsafe[T]
 			)
-			
+
 	/*
 	implicit def ISeqFormat[T:Format]:Format[ISeq[T]]	= {
 		val sub	= format[T]

@@ -14,7 +14,7 @@ trait CollectionProtocol {
 	implicit def ListFormat[T](implicit ev:Format[ISeq[T]]):Format[List[T]]				= ev compose Bijection(identity,	_.toList)
 	implicit def VectorFormat[T](implicit ev:Format[ISeq[T]]):Format[Vector[T]]			= ev compose Bijection(identity,	_.toVector)
 	implicit def ArrayFormat[T:ClassTag](implicit ev:Format[ISeq[T]]):Format[Array[T]]	= ev compose Bijection(_.toVector,	_.toArray)
-	
+
 	// TODO careful, should sort it's keys maybe
 	implicit def MapViaSetFormat[K:Format,V:Format](implicit ev:Format[Set[(K,V)]]):Format[Map[K,V]]	= {
 		Format[Map[K,V]](
@@ -22,14 +22,14 @@ trait CollectionProtocol {
 			(in:BsonValue)	=> (ev set in).toMap
 		)
 	}
-	
+
 	/*
 	def mapFormat[S,T:Format](conv:Bijection[S,String]):Format[Map[S,T]]	=
 			StringMapFormat[T] compose Bijection[Map[S,T],Map[String,T]](
 				_ map { case (k,v) => (conv get k, v) },
 				_ map { case (k,v) => (conv read  k, v) }
 			)
-			
+
 	implicit def StringMapFormat[T:Format]:Format[Map[String,T]]	=
 			Format[Map[String,T]](
 				(out:Map[String,T])	=> {
@@ -45,7 +45,7 @@ trait CollectionProtocol {
 				}
 			)
 	*/
-	
+
 	/*
 	// NOTE mongo keys should be ordered
 	implicit def MapF[T:BFormat]:BFormat[Map[String,T]]	= {
@@ -54,13 +54,13 @@ trait CollectionProtocol {
 				it	=> BsonDocument(it.toSeq map { case (k,v) => (k, sub get v) }),
 				it	=> it.value map { case (k,v) => (k, sub read v) } toMap)
 	}
-	
+
 	// automatically sorts keys alphabetically
 	def sortingDocument[T](writeFunc:T=>Map[String,BsonValue], readFunc:Map[String,BsonValue]=>T):Format[T]	=
 			FormatSubtype[T,BsonDocument](
 					it	=> sortKeys(BsonDocument(writeFunc(it).toSeq)),
 					it	=> readFunc(it.value.toMap))
-		
+
 	def sortKeys(doc:BsonDocument):BsonDocument	=
 			BsonDocument(doc.value sortBy { _._1 })
 

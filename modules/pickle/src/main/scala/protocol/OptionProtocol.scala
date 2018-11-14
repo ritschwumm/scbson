@@ -9,7 +9,7 @@ object OptionProtocol extends OptionProtocol
 trait OptionProtocol {
 	private val someTag	= "some"
 	private val noneTag	= "none"
-	
+
 	// alternative {some} or {none}
 	implicit def OptionFormat[T:Format]:Format[Option[T]]	=
 			Format[Option[T]](

@@ -13,7 +13,7 @@ object BsonValue {
 	def mkNull(it:Unit):BsonValue										= theNull
 	def mkMinKey(it:Unit):BsonValue										= theMinKey
 	def mkMaxKey(it:Unit):BsonValue										= theMaxKey
-	
+
 	def mkBoolean(it:Boolean):BsonValue									= BsonBoolean(it)
 	def mkInt(it:Int):BsonValue											= BsonInt(it)
 	def mkLong(it:Long):BsonValue										= BsonLong(it)
@@ -22,19 +22,19 @@ object BsonValue {
 	def mkSymbol(it:Symbol):BsonValue									= BsonSymbol(it)
 	def mkObjectId(it:ByteString):BsonValue								= BsonObjectId(it)
 	def mkDate(it:MilliInstant):BsonValue								= BsonDate(it)
-	
+
 	// NOTE stamp and inc are unsigned
 	def mkTimestamp(stamp:Int, inc:Int):BsonValue						= BsonTimestamp(stamp, inc)
 	def mkCode(code:String):BsonValue									= BsonCode(code)
 	def mkCodeInScope(code:String, scope:BsonDocument):BsonValue		= BsonCodeInScope(code, scope)
 	def mkBinary(value:ByteString, subtype:BsonBinaryType):BsonValue	= BsonBinary(value, subtype)
 	def mkRegex(pattern:String, options:Set[BsonRegexOption]):BsonValue	= BsonRegex(pattern, options)
-	
+
 	def mkArray(it:ISeq[BsonValue]):BsonValue							= BsonArray(it)
 	def mkDocument(it:ISeq[(String,BsonValue)]):BsonValue				= BsonDocument(it)
 
 	//------------------------------------------------------------------------------
-	
+
 	def typeId[T<:BsonValue](implicit CT:ClassTag[T]):Int	= {
 		val clazz	= CT.runtimeClass
 			 if (clazz == classOf[BsonDouble])		1
@@ -67,7 +67,7 @@ sealed abstract class BsonValue {
 	def asNull:Option[Unit]								= this matchOption { case BsonNull						=> ()	}
 	def asMinKey:Option[Unit]							= this matchOption { case BsonMinKey					=> ()	}
 	def asMaxKey:Option[Unit]							= this matchOption { case BsonMaxKey					=> ()	}
-	
+
 	def asBoolean:Option[Boolean]						= this matchOption { case BsonBoolean(x)				=> x	}
 	def asInt:Option[Int]								= this matchOption { case BsonInt(x)					=> x	}
 	def asLong:Option[Long]								= this matchOption { case BsonLong(x)					=> x	}
@@ -76,13 +76,13 @@ sealed abstract class BsonValue {
 	def asSymbol:Option[Symbol]							= this matchOption { case BsonSymbol(x)					=> x	}
 	def asObjectId:Option[ByteString]					= this matchOption { case BsonObjectId(x)				=> x	}
 	def asDate:Option[MilliInstant]						= this matchOption { case BsonDate(x)					=> x	}
-	
+
 	def asCode:Option[String]							= this matchOption { case BsonCode(code)				=> code 				}
 	def asCodeInScope:Option[(String,BsonDocument)]		= this matchOption { case BsonCodeInScope(code, scope)	=> (code, scope) 		}
 	def asTimestamp:Option[(Int,Int)]					= this matchOption { case BsonTimestamp(stamp, inc)		=> (stamp, inc) 		}
 	def asBinary:Option[(ByteString, BsonBinaryType)]	= this matchOption { case BsonBinary(value, subtype)	=> (value, subtype)		}
 	def asRegex:Option[(String, Set[BsonRegexOption])]	= this matchOption { case BsonRegex(pattern, options)	=> (pattern, options)	}
-	
+
 	def asArray:Option[ISeq[BsonValue]]					= this matchOption { case BsonArray(x)					=> x	}
 	def asDocument:Option[ISeq[(String,BsonValue)]]		= this matchOption { case BsonDocument(x)				=> x	}
 
@@ -102,7 +102,7 @@ final case class BsonString(value:String)									extends BsonValue
 
 object BsonDocument {
 	val empty	= BsonDocument(Vector.empty)
-	
+
 	object Var {
 		def apply(it:(String,BsonValue)*):BsonDocument						= BsonDocument(it.toVector)
 		def unapplySeq(it:BsonDocument):Option[ISeq[(String,BsonValue)]]	= Some(it.value)
@@ -116,7 +116,7 @@ final case class BsonDocument(value:ISeq[(String,BsonValue)])				extends BsonVal
 
 object BsonArray {
 	val empty	= BsonArray(Vector.empty)
-	
+
 	object Var {
 		def apply(it:BsonValue*):BsonArray						= BsonArray(it.toVector)
 		def unapplySeq(it:BsonArray):Option[ISeq[BsonValue]]	= Some(it.value)
