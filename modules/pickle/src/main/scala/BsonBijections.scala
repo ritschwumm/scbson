@@ -10,8 +10,8 @@ import BsonPickleUtil.unapplyTotal
 object BsonBijections {
 	val bsonDouble		= Bijection[BsonDouble,Double]							(_.value,	BsonDouble(_))
 	val bsonString		= Bijection[BsonString,String]							(_.value,	BsonString(_))
-	val bsonDocument	= Bijection[BsonDocument,ISeq[(String,BsonValue)]]		(_.value,	BsonDocument(_))
-	val bsonArray		= Bijection[BsonArray,ISeq[BsonValue]]					(_.value,	BsonArray(_))
+	val bsonDocument	= Bijection[BsonDocument,Seq[(String,BsonValue)]]		(_.value,	BsonDocument(_))
+	val bsonArray		= Bijection[BsonArray,Seq[BsonValue]]					(_.value,	BsonArray(_))
 	val bsonBinary		= Bijection[BsonBinary,(ByteString, BsonBinaryType)]	(unapplyTotal(BsonBinary.unapply,		_), BsonBinary.tupled)
 	val bsonObjectId	= Bijection[BsonObjectId,ByteString]					(_.bytes,	BsonObjectId(_))
 	val bsonBoolean		= Bijection[BsonBoolean,Boolean]						(_.value,	BsonBoolean(_))
