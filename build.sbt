@@ -2,9 +2,9 @@ import spray.boilerplate.BoilerplatePlugin
 
 inThisBuild(Seq(
 	organization	:= "de.djini",
-	version			:= "0.169.0",
+	version			:= "0.170.0",
 
-	scalaVersion	:= "2.12.8",
+	scalaVersion	:= "2.12.10",
 	scalacOptions	++= Seq(
 		"-deprecation",
 		"-unchecked",
@@ -13,14 +13,12 @@ inThisBuild(Seq(
 		// "-language:higherKinds",
 		// "-language:reflectiveCalls",
 		// "-language:dynamics",
-		// "-language:postfixOps",
 		// "-language:experimental.macros"
 		"-feature",
 		"-Xfatal-warnings",
 		"-Xlint"
 	),
-	conflictManager	:= ConflictManager.strict,
-	resolvers		+= "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
+	conflictManager	:= ConflictManager.strict withOrganization "^(?!(org\\.scala-lang|org\\.scala-js)(\\..*)?)$",
 
 	wartremoverErrors	++= Seq(
 		Wart.AsInstanceOf,
@@ -65,7 +63,7 @@ lazy val `scbson-ast`	=
 		(project	in	file("modules/ast"))
 		.settings(
 			libraryDependencies	++= Seq(
-				"de.djini"			%%	"scutil-base"	% "0.159.0"				% "compile"
+				"de.djini"			%%	"scutil-base"	% "0.160.0"				% "compile"
 			)
 		)
 
@@ -82,7 +80,7 @@ lazy val `scbson-pickle`	=
 				// TODO could this be a provided dependency?
 				// TODO is this dependency necessary at all?
 				"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile",
-				"de.djini"			%%	"scutil-base"	% "0.159.0"				% "compile"
+				"de.djini"			%%	"scutil-base"	% "0.160.0"				% "compile"
 			),
 			Compile / boilerplateSource	:= baseDirectory.value/ "src" / "main" / "boilerplate"
 		)
