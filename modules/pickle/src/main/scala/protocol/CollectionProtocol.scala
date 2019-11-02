@@ -10,10 +10,10 @@ import scbson.pickle._
 object CollectionProtocol extends CollectionProtocol
 
 trait CollectionProtocol {
-	implicit def SetFormat[T](implicit ev:Format[ISeq[T]]):Format[Set[T]]				= ev compose Bijection(_.toVector,	_.toSet)
-	implicit def ListFormat[T](implicit ev:Format[ISeq[T]]):Format[List[T]]				= ev compose Bijection(identity,	_.toList)
-	implicit def VectorFormat[T](implicit ev:Format[ISeq[T]]):Format[Vector[T]]			= ev compose Bijection(identity,	_.toVector)
-	implicit def ArrayFormat[T:ClassTag](implicit ev:Format[ISeq[T]]):Format[Array[T]]	= ev compose Bijection(_.toVector,	_.toArray)
+	implicit def SetFormat[T](implicit ev:Format[Seq[T]]):Format[Set[T]]				= ev compose Bijection(_.toVector,	_.toSet)
+	implicit def ListFormat[T](implicit ev:Format[Seq[T]]):Format[List[T]]				= ev compose Bijection(identity,	_.toList)
+	implicit def VectorFormat[T](implicit ev:Format[Seq[T]]):Format[Vector[T]]			= ev compose Bijection(identity,	_.toVector)
+	implicit def ArrayFormat[T:ClassTag](implicit ev:Format[Seq[T]]):Format[Array[T]]	= ev compose Bijection(_.toVector,	_.toArray)
 
 	// TODO careful, should sort it's keys maybe
 	implicit def MapViaSetFormat[K:Format,V:Format](implicit ev:Format[Set[(K,V)]]):Format[Map[K,V]]	= {
@@ -65,7 +65,7 @@ trait CollectionProtocol {
 			BsonDocument(doc.value sortBy { _._1 })
 
 	// expects ordered keys
-	def orderedDocument[T](writeFunc:T=>ISeq[(String,BsonValue)], readFunc:Map[String,BsonValue]=>T):Format[T]	=
+	def orderedDocument[T](writeFunc:T=>Seq[(String,BsonValue)], readFunc:Map[String,BsonValue]=>T):Format[T]	=
 			FormatSubtype[T,BsonDocument](it => BsonDocument(writeFunc(it)), it => readFunc(it.value.toMap))
 	*/
 }

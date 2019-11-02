@@ -30,8 +30,8 @@ object BsonValue {
 	def mkBinary(value:ByteString, subtype:BsonBinaryType):BsonValue	= BsonBinary(value, subtype)
 	def mkRegex(pattern:String, options:Set[BsonRegexOption]):BsonValue	= BsonRegex(pattern, options)
 
-	def mkArray(it:ISeq[BsonValue]):BsonValue							= BsonArray(it)
-	def mkDocument(it:ISeq[(String,BsonValue)]):BsonValue				= BsonDocument(it)
+	def mkArray(it:Seq[BsonValue]):BsonValue							= BsonArray(it)
+	def mkDocument(it:Seq[(String,BsonValue)]):BsonValue				= BsonDocument(it)
 
 	//------------------------------------------------------------------------------
 
@@ -83,8 +83,8 @@ sealed abstract class BsonValue {
 	def asBinary:Option[(ByteString, BsonBinaryType)]	= this matchOption { case BsonBinary(value, subtype)	=> (value, subtype)		}
 	def asRegex:Option[(String, Set[BsonRegexOption])]	= this matchOption { case BsonRegex(pattern, options)	=> (pattern, options)	}
 
-	def asArray:Option[ISeq[BsonValue]]					= this matchOption { case BsonArray(x)					=> x	}
-	def asDocument:Option[ISeq[(String,BsonValue)]]		= this matchOption { case BsonDocument(x)				=> x	}
+	def asArray:Option[Seq[BsonValue]]					= this matchOption { case BsonArray(x)					=> x	}
+	def asDocument:Option[Seq[(String,BsonValue)]]		= this matchOption { case BsonDocument(x)				=> x	}
 
 	/*
 	def downcastHack[T<:BsonValue]:Option[T]	=
@@ -105,10 +105,10 @@ object BsonDocument {
 
 	object Var {
 		def apply(it:(String,BsonValue)*):BsonDocument						= BsonDocument(it.toVector)
-		def unapplySeq(it:BsonDocument):Option[ISeq[(String,BsonValue)]]	= Some(it.value)
+		def unapplySeq(it:BsonDocument):Option[Seq[(String,BsonValue)]]	= Some(it.value)
 	}
 }
-final case class BsonDocument(value:ISeq[(String,BsonValue)])				extends BsonValue {
+final case class BsonDocument(value:Seq[(String,BsonValue)])				extends BsonValue {
 	def get(key:String):Option[BsonValue]	= value collectFirst { case (k,v) if (k == key) => v }
 	def ++ (that:BsonDocument):BsonDocument	= BsonDocument(this.value ++ that.value)
 	def valueMap:Map[String,BsonValue]		= value.toMap
@@ -119,10 +119,10 @@ object BsonArray {
 
 	object Var {
 		def apply(it:BsonValue*):BsonArray						= BsonArray(it.toVector)
-		def unapplySeq(it:BsonArray):Option[ISeq[BsonValue]]	= Some(it.value)
+		def unapplySeq(it:BsonArray):Option[Seq[BsonValue]]	= Some(it.value)
 	}
 }
-final case class BsonArray(value:ISeq[BsonValue])							extends BsonValue {
+final case class BsonArray(value:Seq[BsonValue])							extends BsonValue {
 	def get(index:Int):Option[BsonValue]	= value lift index
 	def ++ (that:BsonArray):BsonArray		= BsonArray(this.value ++ that.value)
 }

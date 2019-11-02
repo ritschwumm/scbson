@@ -23,6 +23,6 @@ object BsonPrisms {
 	val binary		:Prism[BsonValue,(ByteString,BsonBinaryType)]	= Prism(_.asBinary,			(BsonValue.mkBinary			_).tupled)
 	val regex		:Prism[BsonValue,(String,Set[BsonRegexOption])]	= Prism(_.asRegex,			(BsonValue.mkRegex			_).tupled)
 
-	val arraySeq	:Prism[BsonValue,ISeq[BsonValue]]				= Prism(_.asArray,			BsonValue.mkArray)
-	val documentSeq	:Prism[BsonValue,ISeq[(String,BsonValue)]]		= Prism(_.asDocument,		BsonValue.mkDocument)
+	val arraySeq	:Prism[BsonValue,Seq[BsonValue]]				= Prism(_.asArray,			BsonValue.mkArray)
+	val documentSeq	:Prism[BsonValue,Seq[(String,BsonValue)]]		= Prism(_.asDocument,		BsonValue.mkDocument)
 }

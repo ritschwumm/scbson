@@ -1,7 +1,5 @@
 package scbson.pickle
 
-import scutil.lang._
-
 import scbson.ast._
 
 object BsonPickleUtil {
@@ -22,13 +20,13 @@ object BsonPickleUtil {
 				case _						=> fail("expected a BsonDocument")
 			}
 
-	def documentValue(it:BsonValue):ISeq[(String,BsonValue)]	=
+	def documentValue(it:BsonValue):Seq[(String,BsonValue)]	=
 			it match {
 				case BsonDocument(value)	=> value
 				case _						=> fail("expected a BsonDocument")
 			}
 
-	def arrayValue(it:BsonValue):ISeq[BsonValue]	=
+	def arrayValue(it:BsonValue):Seq[BsonValue]	=
 			it match {
 				case BsonArray(value)	=> value
 				case _					=> fail("expected a BsonArray")

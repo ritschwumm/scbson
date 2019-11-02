@@ -15,27 +15,27 @@ final class BsonNavigation(peer:Option[BsonValue]) {
 
 	//------------------------------------------------------------------------------
 
-	def nullRef:Option[Unit]							= peer	flatMap { _.asNull			}
-	def minKeyRef:Option[Unit]							= peer	flatMap { _.asMinKey		}
-	def maxKeyRef:Option[Unit]							= peer	flatMap { _.asMaxKey		}
+	def nullRef:Option[Unit]						= peer	flatMap { _.asNull			}
+	def minKeyRef:Option[Unit]						= peer	flatMap { _.asMinKey		}
+	def maxKeyRef:Option[Unit]						= peer	flatMap { _.asMaxKey		}
 
-	def boolean:Option[Boolean]							= peer	flatMap { _.asBoolean		}
-	def int:Option[Int]									= peer	flatMap { _.asInt			}
-	def long:Option[Long]								= peer	flatMap { _.asLong			}
-	def double:Option[Double]							= peer	flatMap { _.asDouble		}
-	def string:Option[String]							= peer	flatMap { _.asString		}
-	def symbol:Option[Symbol]							= peer	flatMap { _.asSymbol		}
-	def objectId:Option[ByteString]						= peer	flatMap { _.asObjectId		}
-	def date:Option[MilliInstant]						= peer	flatMap { _.asDate			}
+	def boolean:Option[Boolean]						= peer	flatMap { _.asBoolean		}
+	def int:Option[Int]								= peer	flatMap { _.asInt			}
+	def long:Option[Long]							= peer	flatMap { _.asLong			}
+	def double:Option[Double]						= peer	flatMap { _.asDouble		}
+	def string:Option[String]						= peer	flatMap { _.asString		}
+	def symbol:Option[Symbol]						= peer	flatMap { _.asSymbol		}
+	def objectId:Option[ByteString]					= peer	flatMap { _.asObjectId		}
+	def date:Option[MilliInstant]					= peer	flatMap { _.asDate			}
 
-	def code:Option[String]								= peer	flatMap { _.asCode			}
-	def codeInScope:Option[(String,BsonDocument)]		= peer	flatMap { _.asCodeInScope	}
-	def timestamp:Option[(Int,Int)]						= peer	flatMap { _.asTimestamp		}
-	def binary:Option[(ByteString,BsonBinaryType)]		= peer	flatMap { _.asBinary		}
-	def regex:Option[(String,Set[BsonRegexOption])]		= peer	flatMap { _.asRegex			}
+	def code:Option[String]							= peer	flatMap { _.asCode			}
+	def codeInScope:Option[(String,BsonDocument)]	= peer	flatMap { _.asCodeInScope	}
+	def timestamp:Option[(Int,Int)]					= peer	flatMap { _.asTimestamp		}
+	def binary:Option[(ByteString,BsonBinaryType)]	= peer	flatMap { _.asBinary		}
+	def regex:Option[(String,Set[BsonRegexOption])]	= peer	flatMap { _.asRegex			}
 
-	def arraySeq:Option[ISeq[BsonValue]]				= peer	flatMap { _.asArray			}
-	def documentSeq:Option[ISeq[(String,BsonValue)]]	= peer	flatMap { _.asDocument		}
+	def arraySeq:Option[Seq[BsonValue]]				= peer	flatMap { _.asArray			}
+	def documentSeq:Option[Seq[(String,BsonValue)]]	= peer	flatMap { _.asDocument		}
 
 	//------------------------------------------------------------------------------
 

@@ -18,7 +18,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 	def caseClassFormat0[T](apply:()=>T, unapply:T=>Boolean):Format[T]	=
 		Format[T](
 			(out:T)	=> {
-				BsonDocument(ISeq.empty)
+				BsonDocument(Seq.empty)
 			},
 			(in:BsonValue)	=> {
 				val _	= documentMap(in)
@@ -31,7 +31,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 		Format[T](
 			(out:T)	=> {
 				val fields	= unapplyTotal(unapply, out)
-				BsonDocument(ISeq(
+				BsonDocument(Seq(
 					k1	-> doWrite[S1](fields)
 				))
 			},
@@ -49,7 +49,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 		apply:(S1,S2)=>T,
 		unapply:T=>Option[(S1,S2)]
 	):Format[T]	= {
-		val ISeq(k1,k2)	= Fielder[T]
+		val Seq(k1,k2)	= Fielder[T]
 		new Format[T] {
 			def write(out:T):BsonValue	= {
 				val fields	= unapply(out).get
@@ -101,7 +101,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 
 	private type PartialFormat[T]	= PBijection[T,BsonValue]
 
-	private def sumFormat[T](partials:ISeq[PartialFormat[T]]):Format[T]	=
+	private def sumFormat[T](partials:Seq[PartialFormat[T]]):Format[T]	=
 			Format[T](
 				(it:T)			=> partials collapseMapFirst { _ get it } getOrElse fail("no matching constructor found"),
 				(it:BsonValue)	=> partials collapseMapFirst { _ set it } getOrElse fail("no matching constructor found")
