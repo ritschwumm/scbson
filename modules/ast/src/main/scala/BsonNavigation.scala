@@ -4,10 +4,11 @@ import scutil.lang._
 import scutil.time.MilliInstant
 
 object BsonNavigation {
-	implicit def extendBsonNavigation(value:BsonValue):BsonNavigation			= new BsonNavigation(Some(value))
-	implicit def extendBsonNavigation(value:Option[BsonValue]):BsonNavigation	= new BsonNavigation(value)
+	implicit def extendBsonNavigation(value:BsonValue):BsonNavigation				= new BsonNavigation(Some(value))
+	implicit def extendBsonNavigationOption(value:Option[BsonValue]):BsonNavigation	= new BsonNavigation(value)
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Overloading"))
 final class BsonNavigation(peer:Option[BsonValue]) {
 	def /(key:String):Option[BsonValue]	= toMap		flatMap { _ get		key		}
 	def /(index:Int):Option[BsonValue]	= arraySeq	flatMap { _ lift	index	}

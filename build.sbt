@@ -2,7 +2,7 @@ import spray.boilerplate.BoilerplatePlugin
 
 inThisBuild(Seq(
 	organization	:= "de.djini",
-	version			:= "0.165.0",
+	version			:= "0.166.0",
 
 	scalaVersion	:= "2.12.8",
 	scalacOptions	++= Seq(
@@ -26,23 +26,26 @@ inThisBuild(Seq(
 		Wart.AsInstanceOf,
 		Wart.IsInstanceOf,
 		Wart.StringPlusAny,
+		Wart.ToString,
 		Wart.EitherProjectionPartial,
 		Wart.OptionPartial,
+		Wart.TryPartial,
 		Wart.Enumeration,
 		Wart.FinalCaseClass,
 		Wart.JavaConversions,
 		Wart.Option2Iterable,
-		Wart.TryPartial,
 		Wart.JavaSerializable,
 		//Wart.Any,
 		Wart.AnyVal,
 		//Wart.Nothing,
 		Wart.ArrayEquals,
+		Wart.ImplicitParameter,
 		Wart.ExplicitImplicitTypes,
-		Wart.LeakingSealed
-		//Wart.Overloading
+		Wart.LeakingSealed,
+		Wart.DefaultArguments,
+		Wart.Overloading,
 		//Wart.PublicInference,
-		//Wart.TraversableOps
+		Wart.TraversableOps
 	)
 ))
 
@@ -62,7 +65,7 @@ lazy val `scbson-ast`	=
 		(project	in	file("modules/ast"))
 		.settings(
 			libraryDependencies	++= Seq(
-				"de.djini"			%%	"scutil-base"	% "0.155.0"				% "compile"
+				"de.djini"			%%	"scutil-base"	% "0.156.0"				% "compile"
 			)
 		)
 
@@ -79,7 +82,7 @@ lazy val `scbson-pickle`	=
 				// TODO could this be a provided dependency?
 				// TODO is this dependency necessary at all?
 				"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile",
-				"de.djini"			%%	"scutil-base"	% "0.155.0"				% "compile"
+				"de.djini"			%%	"scutil-base"	% "0.156.0"				% "compile"
 			),
 			Compile / boilerplateSource	:= baseDirectory.value/ "src" / "main" / "boilerplate"
 		)
