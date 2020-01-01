@@ -13,7 +13,7 @@ object CaseClassProtocol extends CaseClassProtocol
 
 trait CaseClassProtocol extends CaseClassProtocolGenerated {
 	def caseObjectFormat[T:TypeTag](singleton:T):Format[T]	=
-			Format[T](constant(BsonDocument.empty), constant(singleton))
+		Format[T](constant(BsonDocument.empty), constant(singleton))
 
 	def caseClassFormat0[T](apply:()=>T, unapply:T=>Boolean):Format[T]	=
 		Format[T](
@@ -79,7 +79,7 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 
 	/** uses a field with an empty name for the specific constructor */
 	def caseClassSumFormat[T](summands:CaseSummand[T,_<:T]*):Format[T]	=
-			sumFormat(summands.toVector map (new InlinePartialFormat(_).pf))
+		sumFormat(summands.toVector map (new InlinePartialFormat(_).pf))
 
 
 	/** injects the type tag as a field with an empty name into an existing object */
@@ -87,14 +87,14 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 		import summand._
 
 		def write(value:T):Option[BsonValue]	=
-				castValue(value) map { it =>
-					BsonDocument.Var(typeTag -> BsonString(identifier)) ++
-					downcast[BsonDocument](format get it)
-				}
+			castValue(value) map { it =>
+				BsonDocument.Var(typeTag -> BsonString(identifier)) ++
+				downcast[BsonDocument](format get it)
+			}
 		def read(bson:BsonValue):Option[T]	=
-				documentValue(bson)
-				.exists	{ _ == ((typeTag, BsonString(identifier))) }
-				.option	{ format set bson }
+			documentValue(bson)
+			.exists	{ _ == ((typeTag, BsonString(identifier))) }
+			.option	{ format set bson }
 
 		def pf:PartialFormat[T]	= PBijection(write, read)
 	}
@@ -102,15 +102,15 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 	private type PartialFormat[T]	= PBijection[T,BsonValue]
 
 	private def sumFormat[T](partials:Seq[PartialFormat[T]]):Format[T]	=
-			Format[T](
-				(it:T)			=> partials collapseMapFirst { _ get it } getOrElse fail("no matching constructor found"),
-				(it:BsonValue)	=> partials collapseMapFirst { _ set it } getOrElse fail("no matching constructor found")
-			)
+		Format[T](
+			(it:T)			=> partials collapseMapFirst { _ get it } getOrElse fail("no matching constructor found"),
+			(it:BsonValue)	=> partials collapseMapFirst { _ set it } getOrElse fail("no matching constructor found")
+		)
 
 	object CaseSummand {
 		/** DSL for name -> format construction */
 		implicit def namedSummand[T,C<:T:ClassTag](pair:(String, Format[C])):CaseSummand[T,C]	=
-				CaseSummand(pair._1, pair._2)
+			CaseSummand(pair._1, pair._2)
 	}
 
 	/** NOTE this is not erasure-safe */
@@ -123,6 +123,6 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 		}
 
 		def castValue(value:T):Option[C]	=
-				tag unapply value
+			tag unapply value
 	}
 }

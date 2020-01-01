@@ -9,8 +9,8 @@ object IdentityProtocol extends IdentityProtocol
 /** allows pickle and depickle of BsonValue as BsonValue */
 trait IdentityProtocol {
 	implicit def PassThroughFormat[T<:BsonValue]:Format[T]	=
-			Format[T](
-				identity,
-				downcast[T]
-			)
+		Format[T](
+			identity,
+			downcast[T]
+		)
 }

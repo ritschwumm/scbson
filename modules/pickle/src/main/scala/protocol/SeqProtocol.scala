@@ -8,10 +8,10 @@ object SeqProtocol extends SeqProtocol
 
 trait SeqProtocol {
 	implicit def SeqFormat[T:Format]:Format[Seq[T]] =
-			Format[Seq[T]](
-				(out:Seq[T])	=> BsonArray(out map doWrite[T]),
-				(in:BsonValue)	=> arrayValue(in) map doReadUnsafe[T]
-			)
+		Format[Seq[T]](
+			(out:Seq[T])	=> BsonArray(out map doWrite[T]),
+			(in:BsonValue)	=> arrayValue(in) map doReadUnsafe[T]
+		)
 
 	/*
 	implicit def SeqFormat[T:Format]:Format[Seq[T]]	= {
