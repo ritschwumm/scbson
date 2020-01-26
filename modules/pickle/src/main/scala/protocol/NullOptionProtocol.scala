@@ -35,9 +35,9 @@ trait NullOptionProtocol extends LowPrioNullOptionProtocol {
 			(in:BsonValue)	=> {
 				val map	= documentMap(in)
 				(map get someTag, map get noneTag) match {
-					case (Some(js), None)	=> Some(doReadUnsafe[Option[T]](js))
-					case (None, Some(js))	=> None
-					case _					=> fail("unexpected option")
+					case (Some(js),	None)		=> Some(doReadUnsafe[Option[T]](js))
+					case (None,		Some(js))	=> None
+					case _						=> fail("unexpected option")
 				}
 			}
 		)
