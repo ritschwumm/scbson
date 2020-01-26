@@ -1,13 +1,17 @@
 package scbson.pickle.protocol
 
-object StandardProtocol2 extends StandardProtocol2
+object OldStandardProtocol extends OldStandardProtocol
 
-trait StandardProtocol2
+/**
+uses OldOptionProtocol instead of NullOptionProtocol,
+for new development StandardProtocol is preferred
+*/
+trait OldStandardProtocol
 	extends	NativeProtocol
 	with	ViaProtocol
 	with	SeqProtocol
 	with	CollectionProtocol
-	with	OptionProtocol
+	with	OldOptionProtocol
 	with	EitherProtocol
 	//with	SumProtocol
 	//with	ObjectSumProtocol
