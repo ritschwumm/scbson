@@ -1,2 +1,2 @@
-addSbtPlugin("org.wartremover"	% "sbt-wartremover"	% "2.4.7")
+addSbtPlugin("org.wartremover"	% "sbt-wartremover"	% "2.4.8")
 addSbtPlugin("io.spray"			% "sbt-boilerplate"	% "0.6.1")
