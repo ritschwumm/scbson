@@ -17,7 +17,7 @@ trait CaseClassProtocolGenerated {
 			},
 			(in:BsonValue)	=> {
 				val map	= documentMap(in)
-				apply([#doReadUnsafe[S1](BsonPickleUtil requireField (map, k1))#])
+				apply([#doReadUnsafe[S1](BsonPickleUtil.requireField(map, k1))#])
 			}
 		)
 	}
