@@ -1,6 +1,6 @@
 package scbson.pickle.protocol
 
-import scutil.base.implicits._
+import scutil.core.implicits._
 
 import scbson.ast._
 import scbson.pickle._

@@ -1,6 +1,6 @@
 package scbson.ast
 
-import scutil.base.implicits._
+import scutil.core.implicits._
 import scutil.lang._
 
 object BsonBinaryType {

@@ -2,7 +2,7 @@ package scbson.ast
 
 import scala.reflect.ClassTag
 
-import scutil.base.implicits._
+import scutil.core.implicits._
 import scutil.lang._
 import scutil.time.MilliInstant
 
