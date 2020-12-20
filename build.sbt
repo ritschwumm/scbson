@@ -1,8 +1,10 @@
 import spray.boilerplate.BoilerplatePlugin
 
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 inThisBuild(Seq(
 	organization	:= "de.djini",
-	version			:= "0.203.0",
+	version			:= "0.204.0",
 
 	scalaVersion	:= "2.13.4",
 	scalacOptions	++= Seq(
@@ -58,7 +60,7 @@ lazy val `scbson-ast`	=
 	(project	in	file("modules/ast"))
 	.settings(
 		libraryDependencies	++= Seq(
-			"de.djini"			%%	"scutil-core"	% "0.190.0"				% "compile"
+			"de.djini"			%%	"scutil-core"	% "0.191.0"				% "compile"
 		)
 	)
 
@@ -75,7 +77,7 @@ lazy val `scbson-pickle`	=
 			// TODO could this be a provided dependency?
 			// TODO is this dependency necessary at all?
 			"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile",
-			"de.djini"			%%	"scutil-core"	% "0.190.0"				% "compile"
+			"de.djini"			%%	"scutil-core"	% "0.191.0"				% "compile"
 		),
 		Compile / boilerplateSource	:= baseDirectory.value/ "src" / "main" / "boilerplate"
 	)

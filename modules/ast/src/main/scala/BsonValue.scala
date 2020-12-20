@@ -105,7 +105,7 @@ object BsonDocument {
 
 	object Var {
 		def apply(it:(String,BsonValue)*):BsonDocument					= BsonDocument(it.toVector)
-		def unapplySeq(it:BsonDocument):Option[Seq[(String,BsonValue)]]	= Some(it.value)
+		def unapplySeq(it:BsonDocument):Some[Seq[(String,BsonValue)]]	= Some(it.value)
 	}
 }
 final case class BsonDocument(value:Seq[(String,BsonValue)])				extends BsonValue {
@@ -119,7 +119,7 @@ object BsonArray {
 
 	object Var {
 		def apply(it:BsonValue*):BsonArray					= BsonArray(it.toVector)
-		def unapplySeq(it:BsonArray):Option[Seq[BsonValue]]	= Some(it.value)
+		def unapplySeq(it:BsonArray):Some[Seq[BsonValue]]	= Some(it.value)
 	}
 }
 final case class BsonArray(value:Seq[BsonValue])							extends BsonValue {
