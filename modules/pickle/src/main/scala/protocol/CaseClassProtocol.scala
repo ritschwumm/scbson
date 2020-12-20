@@ -26,23 +26,26 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 			}
 		)
 
-	def caseClassFormat1[S1:Format,T](apply:S1=>T, unapply:T=>Option[S1])(implicit FN:FieldNames[T]):Format[T]	= {
-		val Vector(k1)	= FN.names
-		Format[T](
-			(out:T)	=> {
-				val fields	= unapplyTotal(unapply, out)
-				BsonDocument(Seq(
-					k1	-> doWrite[S1](fields)
-				))
-			},
-			(in:BsonValue)	=> {
-				val map	= documentMap(in)
-				apply(
-					doReadUnsafe[S1](map(k1))
+	def caseClassFormat1[S1:Format,T](apply:S1=>T, unapply:T=>Option[S1])(implicit FN:FieldNames[T]):Format[T]	=
+		FN.names match {
+			case Vector(k1)	=>
+				Format[T](
+					(out:T)	=> {
+						val fields	= unapplyTotal(unapply, out)
+						BsonDocument(Seq(
+							k1	-> doWrite[S1](fields)
+						))
+					},
+					(in:BsonValue)	=> {
+						val map	= documentMap(in)
+						apply(
+							doReadUnsafe[S1](map(k1))
+						)
+					}
 				)
-			}
-		)
-	}
+			case x =>
+				sys error s"unexpected number of field names: ${x.toString}"
+		}
 
 	/*
 	def caseClassFormat2[S1:Format,S2:Format,T:Fielding](
