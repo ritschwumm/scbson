@@ -104,7 +104,7 @@ object BsonDocument {
 	val empty	= BsonDocument(Vector.empty)
 
 	object Var {
-		def apply(it:(String,BsonValue)*):BsonDocument						= BsonDocument(it.toVector)
+		def apply(it:(String,BsonValue)*):BsonDocument					= BsonDocument(it.toVector)
 		def unapplySeq(it:BsonDocument):Option[Seq[(String,BsonValue)]]	= Some(it.value)
 	}
 }
@@ -118,7 +118,7 @@ object BsonArray {
 	val empty	= BsonArray(Vector.empty)
 
 	object Var {
-		def apply(it:BsonValue*):BsonArray						= BsonArray(it.toVector)
+		def apply(it:BsonValue*):BsonArray					= BsonArray(it.toVector)
 		def unapplySeq(it:BsonArray):Option[Seq[BsonValue]]	= Some(it.value)
 	}
 }
@@ -140,7 +140,7 @@ final case class BsonObjectId(bytes:ByteString) extends BsonValue
 
 object BsonBoolean {
 	def apply(value:Boolean):BsonBoolean			= if (value) BsonTrue else BsonFalse
-	def unapply(value:BsonBoolean):Option[Boolean]	= Some(value.value)
+	def unapply(value:BsonBoolean):Some[Boolean]	= Some(value.value)
 }
 sealed abstract class BsonBoolean extends BsonValue {
 	def value:Boolean	= this match {
