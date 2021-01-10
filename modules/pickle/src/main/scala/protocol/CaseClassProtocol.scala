@@ -106,8 +106,8 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 
 	private def sumFormat[T](partials:Seq[PartialFormat[T]]):Format[T]	=
 		Format[T](
-			(it:T)			=> partials collapseMapFirst { _ get it } getOrElse fail("no matching constructor found"),
-			(it:BsonValue)	=> partials collapseMapFirst { _ set it } getOrElse fail("no matching constructor found")
+			(it:T)			=> partials collectFirstSome { _ get it } getOrElse fail("no matching constructor found"),
+			(it:BsonValue)	=> partials collectFirstSome { _ set it } getOrElse fail("no matching constructor found")
 		)
 
 	object CaseSummand {
