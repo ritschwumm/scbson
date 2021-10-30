@@ -1,7 +1,7 @@
 package scbson.pickle.protocol
 
 import scala.language.implicitConversions
-import scala.reflect.runtime.universe._
+import scala.reflect._
 
 import scutil.core.implicits._
 import scutil.lang._
@@ -13,7 +13,7 @@ import scbson.pickle.BsonPickleUtil._
 object CaseClassProtocol extends CaseClassProtocol
 
 trait CaseClassProtocol extends CaseClassProtocolGenerated {
-	def caseObjectFormat[T:TypeTag](singleton:T):Format[T]	=
+	def caseObjectFormat[T](singleton:T):Format[T]	=
 		Format[T](constant(BsonDocument.empty), constant(singleton))
 
 	def caseClassFormat0[T](apply:()=>T, unapply:T=>Boolean):Format[T]	=
@@ -77,31 +77,11 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 
 	// TODO simplify - get rid of the ClassTag
 
-	import scala.reflect._
-
 	private val typeTag	= ""
 
 	/** uses a field with an empty name for the specific constructor */
-	def caseClassSumFormat[T](summands:CaseSummand[T,_<:T]*):Format[T]	=
-		sumFormat(summands.toVector map (new InlinePartialFormat(_).pf))
-
-
-	/** injects the type tag as a field with an empty name into an existing object */
-	private class InlinePartialFormat[T,C<:T](summand:CaseSummand[T,C]) {
-		import summand._
-
-		def write(value:T):Option[BsonValue]	=
-			castValue(value) map { it =>
-				BsonDocument.Var(typeTag -> BsonString(identifier)) ++
-				downcast[BsonDocument](format get it)
-			}
-		def read(bson:BsonValue):Option[T]	=
-			documentValue(bson)
-			.exists	{ _ == ((typeTag, BsonString(identifier))) }
-			.option	{ format set bson }
-
-		def pf:PartialFormat[T]	= PBijection(write, read)
-	}
+	def caseClassSumFormat[T](summands:CaseSummand[T,_]*):Format[T]	=
+		sumFormat(summands.toVector map (_.partialFormat))
 
 	private type PartialFormat[T]	= PBijection[T,BsonValue]
 
@@ -117,7 +97,10 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 			CaseSummand(pair._1, pair._2)
 	}
 
-	/** NOTE this is not erasure-safe */
+	/**
+	 * injects the type tag as a field with an empty name into an existing object
+	 * NOTE this is not erasure-safe
+	 */
 	case class CaseSummand[T,C<:T:ClassTag](identifier:String, format:Format[C]) {
 		private val tag		= {
 			val origTag	= classTag[C]
@@ -126,7 +109,19 @@ trait CaseClassProtocol extends CaseClassProtocolGenerated {
 			else						origTag
 		}
 
-		def castValue(value:T):Option[C]	=
-			tag unapply value
+		// TODO this is just a regular write guarded by the possibility of a downcast, which is essentially an isInstanceOf
+		private def write(value:T):Option[BsonValue]	=
+			tag unapply value map { (it:C) =>
+				BsonDocument.Var(typeTag -> BsonString(identifier)) ++
+				downcast[BsonDocument](format get it)
+			}
+
+		private def read(bson:BsonValue):Option[T]	=
+			documentValue(bson)
+			.exists	{ _ == ((typeTag, BsonString(identifier))) }
+			.option	{ format set bson }
+
+		def partialFormat:PartialFormat[T]	=
+			PBijection(write, read)
 	}
 }

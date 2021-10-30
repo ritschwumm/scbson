@@ -176,6 +176,6 @@ final case class BsonTimestamp(stamp:Int, inc:Int)							extends BsonValue
 // since 2.6 (??)
 final case class BsonLong(value:Long)										extends BsonValue
 
-final case object BsonMinKey												extends BsonValue
+case object BsonMinKey												extends BsonValue
 
-final case object BsonMaxKey												extends BsonValue
+case object BsonMaxKey												extends BsonValue

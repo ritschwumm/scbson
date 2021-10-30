@@ -4,7 +4,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 inThisBuild(Seq(
 	organization	:= "de.djini",
-	version			:= "0.224.0",
+	version			:= "0.225.0",
 
 	scalaVersion	:= "2.13.6",
 	scalacOptions	++= Seq(
@@ -76,9 +76,6 @@ lazy val `scbson-pickle`	=
 	)
 	.settings(
 		libraryDependencies	++= Seq(
-			// TODO could this be a provided dependency?
-			// TODO is this dependency necessary at all?
-			"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile",
 			"de.djini"			%%	"scutil-core"	% "0.210.1"				% "compile"
 		),
 		Compile / boilerplateSource	:= baseDirectory.value/ "src" / "main" / "boilerplate"
