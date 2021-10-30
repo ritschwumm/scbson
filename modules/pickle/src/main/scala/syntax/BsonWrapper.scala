@@ -1,5 +1,7 @@
 package scbson.pickle.syntax
 
+import scala.language.implicitConversions
+
 import scbson.ast._
 import scbson.pickle._
 

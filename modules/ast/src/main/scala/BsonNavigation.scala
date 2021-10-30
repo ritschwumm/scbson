@@ -1,5 +1,7 @@
 package scbson.ast
 
+import scala.language.implicitConversions
+
 import scutil.lang._
 import scutil.time.MilliInstant
 

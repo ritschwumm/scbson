@@ -1,6 +1,7 @@
 package scbson.pickle.protocol
 
-import reflect.runtime.universe._
+import scala.language.implicitConversions
+import scala.reflect.runtime.universe._
 
 import scutil.core.implicits._
 import scutil.lang._
