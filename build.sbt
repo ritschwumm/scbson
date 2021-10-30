@@ -4,9 +4,9 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 inThisBuild(Seq(
 	organization	:= "de.djini",
-	version			:= "0.216.0",
+	version			:= "0.217.0",
 
-	scalaVersion	:= "2.13.4",
+	scalaVersion	:= "2.13.5",
 	scalacOptions	++= Seq(
 		"-feature",
 		"-deprecation",
@@ -15,6 +15,8 @@ inThisBuild(Seq(
 		"-Xlint",
 		"-language:implicitConversions",
 	),
+
+	versionScheme	:= Some("early-semver"),
 	conflictManager	:= ConflictManager.strict withOrganization "^(?!(org\\.scala-lang|org\\.scala-js)(\\..*)?)$",
 
 	wartremoverErrors	++= Seq(
@@ -60,7 +62,7 @@ lazy val `scbson-ast`	=
 	(project	in	file("modules/ast"))
 	.settings(
 		libraryDependencies	++= Seq(
-			"de.djini"			%%	"scutil-core"	% "0.203.0"				% "compile"
+			"de.djini"			%%	"scutil-core"	% "0.204.0"				% "compile"
 		)
 	)
 
@@ -77,7 +79,7 @@ lazy val `scbson-pickle`	=
 			// TODO could this be a provided dependency?
 			// TODO is this dependency necessary at all?
 			"org.scala-lang"	%	"scala-reflect"	% scalaVersion.value	% "compile",
-			"de.djini"			%%	"scutil-core"	% "0.203.0"				% "compile"
+			"de.djini"			%%	"scutil-core"	% "0.204.0"				% "compile"
 		),
 		Compile / boilerplateSource	:= baseDirectory.value/ "src" / "main" / "boilerplate"
 	)
